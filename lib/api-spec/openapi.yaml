@@ -466,6 +466,8 @@ components:
           type: ["string", "null"]
         smtp_user:
           type: ["string", "null"]
+        smtp_pass:
+          type: ["string", "null"]
         smtp_from_name:
           type: ["string", "null"]
         smtp_secure:
@@ -530,6 +532,8 @@ components:
         smtp_port:
           type: ["string", "null"]
         smtp_user:
+          type: ["string", "null"]
+        smtp_pass:
           type: ["string", "null"]
         smtp_from_name:
           type: ["string", "null"]

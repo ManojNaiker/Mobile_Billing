@@ -41,6 +41,7 @@ const companySchema = z.object({
   smtp_host: z.string().optional(),
   smtp_port: z.string().optional(),
   smtp_user: z.string().optional(),
+  smtp_pass: z.string().optional(),
   smtp_from_name: z.string().optional(),
   smtp_secure: z.string().optional(),
 });
@@ -78,6 +79,7 @@ export default function Company() {
       smtp_host: "",
       smtp_port: "",
       smtp_user: "",
+      smtp_pass: "",
       smtp_from_name: "",
       smtp_secure: "false",
     },
@@ -111,6 +113,7 @@ export default function Company() {
         smtp_host: company.smtp_host || "",
         smtp_port: company.smtp_port || "",
         smtp_user: company.smtp_user || "",
+        smtp_pass: (company as any).smtp_pass || "",
         smtp_from_name: company.smtp_from_name || "",
         smtp_secure: company.smtp_secure || "false",
       });
@@ -393,6 +396,15 @@ export default function Company() {
                         <FormMessage />
                       </FormItem>
                     )} />
+                    <FormField control={form.control} name="smtp_pass" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password / App Password</FormLabel>
+                        <FormControl><Input type="password" placeholder="••••••••" {...field} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField control={form.control} name="smtp_from_name" render={({ field }) => (
                       <FormItem>
                         <FormLabel>From Name</FormLabel>

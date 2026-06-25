@@ -37,6 +37,7 @@ router.get("/", async (req, res) => {
         smtp_host: null,
         smtp_port: null,
         smtp_user: null,
+        smtp_pass: null,
         smtp_from_name: null,
         smtp_secure: null,
         created_at: new Date().toISOString(),
