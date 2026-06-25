@@ -131,7 +131,7 @@ export default function InvoiceForm() {
       destination: "",
       terms_of_delivery: "",
       payment_mode: "Bank Transfer",
-      status: "draft",
+      status: "paid",
       is_inter_state: false,
       items: [{
         description: "", hsnSac: "", unit: "PCS", quantity: 1, rate: 0, discountPercent: 0, taxPercent: 18
@@ -312,10 +312,8 @@ export default function InvoiceForm() {
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                         <SelectContent>
-                          <SelectItem value="draft">Draft</SelectItem>
-                          <SelectItem value="pending">Pending</SelectItem>
                           <SelectItem value="paid">Paid</SelectItem>
-                          <SelectItem value="cancelled">Cancelled</SelectItem>
+                          <SelectItem value="unpaid">Unpaid</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -416,7 +414,8 @@ export default function InvoiceForm() {
             </Card>
           </div>
 
-          <Card className="shadow-sm">
+          <div className="flex gap-6 items-start">
+          <Card className="shadow-sm flex-1 min-w-0">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg">Items</CardTitle>
             </CardHeader>
@@ -544,82 +543,79 @@ export default function InvoiceForm() {
             </CardContent>
           </Card>
 
-          <div className="flex flex-col md:flex-row gap-6">
-            <div className="flex-1 space-y-4">
-              <Collapsible open={showAdditional} onOpenChange={setShowAdditional} className="border rounded-lg p-4 bg-card">
-                <CollapsibleTrigger className="flex justify-between items-center w-full font-medium">
-                  Additional Details (Transport, e-Way bill...)
-                  {showAdditional ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                </CollapsibleTrigger>
-                <CollapsibleContent className="space-y-4 mt-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField control={form.control} name="buyer_order_number" render={({ field }) => (
-                      <FormItem><FormLabel>Order Number</FormLabel><FormControl><Input {...field} value={field.value || ""} /></FormControl></FormItem>
-                    )} />
-                    <FormField control={form.control} name="order_date" render={({ field }) => (
-                      <FormItem><FormLabel>Order Date</FormLabel><FormControl><Input type="date" {...field} value={field.value || ""} /></FormControl></FormItem>
-                    )} />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField control={form.control} name="e_way_bill_number" render={({ field }) => (
-                      <FormItem><FormLabel>e-Way Bill No.</FormLabel><FormControl><Input {...field} value={field.value || ""} /></FormControl></FormItem>
-                    )} />
-                    <FormField control={form.control} name="dispatch_doc_number" render={({ field }) => (
-                      <FormItem><FormLabel>Dispatch Doc No.</FormLabel><FormControl><Input {...field} value={field.value || ""} /></FormControl></FormItem>
-                    )} />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField control={form.control} name="dispatched_through" render={({ field }) => (
-                      <FormItem><FormLabel>Dispatched Through</FormLabel><FormControl><Input {...field} value={field.value || ""} /></FormControl></FormItem>
-                    )} />
-                    <FormField control={form.control} name="destination" render={({ field }) => (
-                      <FormItem><FormLabel>Destination</FormLabel><FormControl><Input {...field} value={field.value || ""} /></FormControl></FormItem>
-                    )} />
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-            </div>
-            
-            <div className="md:w-80 space-y-4">
-              <Card className="shadow-sm">
-                <CardContent className="p-4 space-y-2 text-sm">
+          {/* Totals panel — right-aligned alongside Items */}
+          <Card className="shadow-sm w-72 shrink-0">
+            <CardContent className="p-4 space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Subtotal:</span>
+                <span>{formatIndianCurrency(totals.subtotal)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Discount:</span>
+                <span>-{formatIndianCurrency(totals.discount_amount)}</span>
+              </div>
+              <div className="flex justify-between border-t pt-2 mt-2">
+                <span className="font-medium">Taxable Value:</span>
+                <span className="font-medium">{formatIndianCurrency(totals.taxable_value)}</span>
+              </div>
+              {!watchIsInterState ? (
+                <>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Subtotal:</span>
-                    <span>{formatIndianCurrency(totals.subtotal)}</span>
+                    <span className="text-muted-foreground">CGST:</span>
+                    <span>{formatIndianCurrency(totals.cgst_total)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Discount:</span>
-                    <span>-{formatIndianCurrency(totals.discount_amount)}</span>
+                    <span className="text-muted-foreground">SGST:</span>
+                    <span>{formatIndianCurrency(totals.sgst_total)}</span>
                   </div>
-                  <div className="flex justify-between border-t pt-2 mt-2">
-                    <span className="font-medium">Taxable Value:</span>
-                    <span className="font-medium">{formatIndianCurrency(totals.taxable_value)}</span>
-                  </div>
-                  {!watchIsInterState ? (
-                    <>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">CGST:</span>
-                        <span>{formatIndianCurrency(totals.cgst_total)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">SGST:</span>
-                        <span>{formatIndianCurrency(totals.sgst_total)}</span>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">IGST:</span>
-                      <span>{formatIndianCurrency(totals.igst_total)}</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between border-t pt-2 mt-2 text-lg font-bold text-primary">
-                    <span>Total:</span>
-                    <span>{formatIndianCurrency(totals.grand_total)}</span>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                </>
+              ) : (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">IGST:</span>
+                  <span>{formatIndianCurrency(totals.igst_total)}</span>
+                </div>
+              )}
+              <div className="flex justify-between border-t pt-2 mt-2 text-lg font-bold text-primary">
+                <span>Total:</span>
+                <span>{formatIndianCurrency(totals.grand_total)}</span>
+              </div>
+            </CardContent>
+          </Card>
           </div>
+
+          {/* Additional Details below the items+totals row */}
+          <Collapsible open={showAdditional} onOpenChange={setShowAdditional} className="border rounded-lg p-4 bg-card">
+            <CollapsibleTrigger className="flex justify-between items-center w-full font-medium">
+              Additional Details (Transport, e-Way bill...)
+              {showAdditional ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-4 mt-4">
+              <div className="grid grid-cols-2 gap-4">
+                <FormField control={form.control} name="buyer_order_number" render={({ field }) => (
+                  <FormItem><FormLabel>Order Number</FormLabel><FormControl><Input {...field} value={field.value || ""} /></FormControl></FormItem>
+                )} />
+                <FormField control={form.control} name="order_date" render={({ field }) => (
+                  <FormItem><FormLabel>Order Date</FormLabel><FormControl><Input type="date" {...field} value={field.value || ""} /></FormControl></FormItem>
+                )} />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField control={form.control} name="e_way_bill_number" render={({ field }) => (
+                  <FormItem><FormLabel>e-Way Bill No.</FormLabel><FormControl><Input {...field} value={field.value || ""} /></FormControl></FormItem>
+                )} />
+                <FormField control={form.control} name="dispatch_doc_number" render={({ field }) => (
+                  <FormItem><FormLabel>Dispatch Doc No.</FormLabel><FormControl><Input {...field} value={field.value || ""} /></FormControl></FormItem>
+                )} />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField control={form.control} name="dispatched_through" render={({ field }) => (
+                  <FormItem><FormLabel>Dispatched Through</FormLabel><FormControl><Input {...field} value={field.value || ""} /></FormControl></FormItem>
+                )} />
+                <FormField control={form.control} name="destination" render={({ field }) => (
+                  <FormItem><FormLabel>Destination</FormLabel><FormControl><Input {...field} value={field.value || ""} /></FormControl></FormItem>
+                )} />
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
         </form>
       </Form>
     </div>
