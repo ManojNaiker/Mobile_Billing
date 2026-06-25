@@ -54,6 +54,7 @@ const invoiceSchema = z.object({
   is_inter_state: z.boolean(),
   items: z.array(z.object({
     description: z.string().min(1, "Description is required"),
+    notes: z.string().optional(),
     hsnSac: z.string().optional(),
     unit: z.string().min(1, "Unit is required"),
     quantity: z.coerce.number().min(1, "Qty must be > 0"),
@@ -82,6 +83,15 @@ export default function InvoiceForm() {
   const queryClient = useQueryClient();
   
   const [showAdditional, setShowAdditional] = useState(false);
+  const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set());
+
+  const toggleNotes = (index: number) => {
+    setExpandedNotes(prev => {
+      const next = new Set(prev);
+      if (next.has(index)) next.delete(index); else next.add(index);
+      return next;
+    });
+  };
 
   const { data: invoice, isLoading: loadingInvoice } = useGetInvoice(Number(id), { 
     query: { enabled: isEdit, queryKey: ['invoice', id] } 
@@ -252,7 +262,7 @@ export default function InvoiceForm() {
   }
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto pb-20 animate-in fade-in duration-500">
+    <div className="space-y-6 pb-20 animate-in fade-in duration-500">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">{isEdit ? `Edit Invoice: ${form.getValues('invoice_number')}` : 'New Invoice'}</h2>
         <div className="flex gap-2">
@@ -380,7 +390,6 @@ export default function InvoiceForm() {
                   )} />
                   <FormField control={form.control} name="buyer_phone" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs text-muted-foreground">Mobile Number</FormLabel>
                       <FormControl><Input placeholder="Mobile Number" {...field} value={field.value || ""} /></FormControl>
                       <FormMessage />
                     </FormItem>
@@ -443,9 +452,40 @@ export default function InvoiceForm() {
                                   {products?.map(p => <SelectItem key={p.id} value={p.id.toString()}>{p.name}</SelectItem>)}
                                 </SelectContent>
                               </Select>
-                              <FormField control={form.control} name={`items.${index}.description`} render={({ field }) => (
-                                <FormItem className="flex-1 space-y-0"><FormControl><Input className="h-9" placeholder="Description" {...field} /></FormControl></FormItem>
-                              )} />
+                              <div className="flex-1 space-y-1">
+                                <FormField control={form.control} name={`items.${index}.description`} render={({ field }) => (
+                                  <FormItem className="space-y-0">
+                                    <FormControl>
+                                      <Input
+                                        className="h-9"
+                                        placeholder="Description"
+                                        {...field}
+                                        onKeyDown={(e) => {
+                                          if (e.key === "Enter") {
+                                            e.preventDefault();
+                                            toggleNotes(index);
+                                          }
+                                        }}
+                                      />
+                                    </FormControl>
+                                  </FormItem>
+                                )} />
+                                {(expandedNotes.has(index) || watchItems[index]?.notes) && (
+                                  <FormField control={form.control} name={`items.${index}.notes`} render={({ field }) => (
+                                    <FormItem className="space-y-0">
+                                      <FormControl>
+                                        <textarea
+                                          className="w-full text-xs px-2 py-1 rounded border border-input bg-background resize-none focus:outline-none focus:ring-1 focus:ring-ring leading-tight"
+                                          rows={2}
+                                          placeholder="IMEI / Serial / Extra details..."
+                                          {...field}
+                                          value={field.value ?? ""}
+                                        />
+                                      </FormControl>
+                                    </FormItem>
+                                  )} />
+                                )}
+                              </div>
                             </div>
                           </TableCell>
                           <TableCell className="p-2 align-top">
