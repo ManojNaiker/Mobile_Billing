@@ -1,0 +1,519 @@
+PROJECT OVERVIEW
+Ek professional GST Tax Invoice Generator web application banao jo Indian small businesses ke liye ho. App ka naam BillEase hai. Yeh app Tally jaisi look mein GST invoices create, manage aur print kar sake.
+
+TECH STACK
+Frontend  : React + Vite + TypeScript + Tailwind CSS + shadcn/ui
+Routing   : wouter (React Router ki jagah)
+Backend   : Node.js + Express 5 + TypeScript
+Database  : PostgreSQL + Drizzle ORM
+Validation: Zod
+Charts    : Recharts
+Package   : pnpm workspaces (monorepo)
+
+DATABASE SCHEMA
+Table 1: company (Singleton — sirf ek row)
+id                   SERIAL PRIMARY KEY
+name                 TEXT NOT NULL
+address              TEXT NOT NULL
+gstin                TEXT
+state_name           TEXT
+state_code           TEXT
+email                TEXT NOT NULL
+phone                TEXT
+bank_name            TEXT
+account_number       TEXT
+ifsc_code            TEXT
+branch_name          TEXT
+logo_url             TEXT
+declaration_text     TEXT
+authorized_signatory TEXT
+invoice_prefix       TEXT          -- e.g. "INV", "BILL"
+invoice_counter      INTEGER DEFAULT 1
+watermark_text       TEXT
+watermark_font       TEXT
+watermark_opacity    TEXT
+watermark_color      TEXT
+watermark_size       TEXT
+smtp_host            TEXT
+smtp_port            TEXT
+smtp_user            TEXT
+smtp_pass            TEXT
+smtp_from_name       TEXT
+smtp_secure          TEXT
+created_at           TIMESTAMPTZ DEFAULT NOW()
+updated_at           TIMESTAMPTZ DEFAULT NOW()
+
+Table 2: customers
+id          SERIAL PRIMARY KEY
+name        TEXT NOT NULL
+address     TEXT NOT NULL
+gstin       TEXT
+state_name  TEXT
+state_code  TEXT
+email       TEXT
+phone       TEXT
+created_at  TIMESTAMPTZ DEFAULT NOW()
+
+Table 3: products
+id          SERIAL PRIMARY KEY
+name        TEXT NOT NULL
+code        TEXT
+hsn_sac     TEXT          -- HSN code for goods / SAC for services
+unit        TEXT DEFAULT 'PCS'
+rate        DOUBLE PRECISION DEFAULT 0
+tax_percent DOUBLE PRECISION DEFAULT 18
+created_at  TIMESTAMPTZ DEFAULT NOW()
+
+Table 4: invoices
+id                   SERIAL PRIMARY KEY
+invoice_number       TEXT NOT NULL UNIQUE
+invoice_date         TEXT NOT NULL
+e_way_bill_number    TEXT
+delivery_note        TEXT
+payment_terms        TEXT
+supplier_ref         TEXT
+other_ref            TEXT
+buyer_order_number   TEXT
+order_date           TEXT
+buyer_name           TEXT NOT NULL
+buyer_address        TEXT NOT NULL
+buyer_gstin          TEXT
+buyer_phone          TEXT
+buyer_state_name     TEXT
+buyer_state_code     TEXT
+dispatch_doc_number  TEXT
+delivery_note_date   TEXT
+dispatched_through   TEXT
+destination          TEXT
+terms_of_delivery    TEXT
+subtotal             DOUBLE PRECISION DEFAULT 0
+discount_amount      DOUBLE PRECISION DEFAULT 0
+taxable_value        DOUBLE PRECISION DEFAULT 0
+cgst_total           DOUBLE PRECISION DEFAULT 0
+sgst_total           DOUBLE PRECISION DEFAULT 0
+igst_total           DOUBLE PRECISION DEFAULT 0
+grand_total          DOUBLE PRECISION DEFAULT 0
+amount_in_words      TEXT DEFAULT ''
+payment_mode         TEXT DEFAULT 'cash'
+status               TEXT DEFAULT 'draft'  -- draft/pending/paid/cancelled
+items                JSONB DEFAULT '[]'    -- Line items array (no separate table)
+created_at           TIMESTAMPTZ DEFAULT NOW()
+updated_at           TIMESTAMPTZ DEFAULT NOW()
+
+Invoice items JSONB structure (each item):
+
+{
+  "description": "Product Name",
+  "hsnSac": "1234",
+  "unit": "PCS",
+  "quantity": 2,
+  "rate": 500,
+  "discountPercent": 0,
+  "taxPercent": 18,
+  "amount": 1000,
+  "cgstPercent": 9,
+  "cgstAmount": 90,
+  "sgstPercent": 9,
+  "sgstAmount": 90,
+  "igstPercent": 0,
+  "igstAmount": 0,
+  "total": 1180
+}
+
+API ENDPOINTS
+Company
+GET  /api/company          — Company profile fetch karo
+PUT  /api/company          — Company profile update karo
+
+Customers
+GET    /api/customers              — Sab customers list (search support)
+POST   /api/customers              — Naya customer banao
+PUT    /api/customers/:id          — Customer update karo
+DELETE /api/customers/:id          — Customer delete karo
+
+Products
+GET    /api/products               — Product catalog list
+POST   /api/products               — Naya product banao
+PUT    /api/products/:id           — Product update karo
+DELETE /api/products/:id           — Product delete karo
+
+Invoices
+GET    /api/invoices                — Invoice list (search, status filter, pagination)
+POST   /api/invoices                — Naya invoice create karo
+GET    /api/invoices/next-number    — Next auto invoice number fetch karo
+GET    /api/invoices/:id            — Single invoice fetch karo
+PUT    /api/invoices/:id            — Invoice update karo
+DELETE /api/invoices/:id            — Invoice delete karo
+POST   /api/invoices/:id/duplicate  — Invoice duplicate karo (new number ke saath)
+
+Dashboard
+GET /api/dashboard/summary          — Stats: total invoices, monthly revenue, tax collected, avg value
+GET /api/dashboard/recent-invoices  — Last 5 invoices
+GET /api/dashboard/monthly-revenue  — Last 12 months revenue data (bar chart ke liye)
+
+PAGES & FEATURES
+Page 1: DASHBOARD (/)
+Stats Cards (top row):
+
+Total Invoices (count)
+Monthly Revenue (current month, ₹ format)
+Tax Collected (CGST + SGST + IGST total)
+Average Invoice Value
+Monthly Revenue Bar Chart:
+
+Last 12 mahine ka bar chart (Recharts library)
+X-axis: Month name (Jan, Feb... Dec)
+Y-axis: Revenue amount
+Hover tooltip mein exact amount
+Recent Invoices Table:
+
+Last 5-10 invoices
+Columns: Invoice No, Date, Customer, Amount, Status badge
+Status ke rang: Draft=grey, Pending=yellow, Paid=green, Cancelled=red
+Click karne pe invoice preview pe jaao
+Page 2: INVOICE FORM — Create/Edit (/billing/new, /billing/:id/edit)
+Header Section:
+
+Invoice Number (auto-generated, editable) — format: PREFIX-0001
+Invoice Date (date picker)
+Payment Terms, Delivery Note, Supplier Ref, Other Ref (optional fields)
+E-Way Bill Number (optional)
+Buyer Details Section:
+
+Customer dropdown (existing customers se select karo ya naya type karo)
+Customer name, address, GSTIN, phone, state name, state code
+Jab existing customer select karo — sab fields auto-fill ho jaayein
+Additional Details (collapsible):
+
+Buyer Order Number, Order Date
+Dispatch Doc Number, Delivery Note Date
+Dispatched Through (courier/transport name)
+Destination, Terms of Delivery
+Items Table:
+
+Dynamic rows — add/remove karo
+Columns: #, Description, HSN/SAC, Unit, Qty, Rate, Discount%, Tax%, Amount
+Product autocomplete — naam type karo to catalog se suggest karo (rate, HSN, tax% auto-fill)
+Har row mein real-time calculation
+Row delete button
+GST Mode Toggle:
+
+Intra-state (CGST + SGST): Jab seller aur buyer same state mein ho
+Inter-state (IGST): Alag state pe
+Summary Section (right side):
+
+Subtotal
+Total Discount
+Taxable Value
+CGST Total / SGST Total (ya IGST Total)
+Grand Total (bold, large)
+Amount in Words (Indian system — lakhs, crores)
+Payment Mode: Cash / Cheque / Online / UPI / Bank Transfer
+
+Status: Draft / Pending / Paid / Cancelled
+
+Buttons:
+
+Save Draft
+Save & Preview
+Cancel
+Page 3: INVOICE PREVIEW / PRINT (/billing/:id/preview)
+Tally-style A4 format print layout:
+
+Header:
+
+Company logo (agar set hai to)
+Company name (bold, large)
+Company address, GSTIN, phone, email
+"TAX INVOICE" title (center mein)
+Invoice Number aur Date (right side)
+Two-column Seller/Buyer block:
+
+Left: Seller details (company info)
+Right: Buyer details (customer info)
+Additional Invoice Details row:
+
+Delivery Note, Payment Terms, Supplier Ref, Buyer Order No.
+Items Table:
+
+S.No, Description, HSN/SAC, Unit, Qty, Rate, Discount, Taxable Value, Tax%, Tax Amount, Total
+Footer row: Subtotals for each amount column
+Tax Summary Table:
+
+HSN/SAC code wise breakup
+Taxable Value, CGST %, CGST Amt, SGST %, SGST Amt (ya IGST)
+Grand totals
+Amount in Words:
+
+"Rupees One Lakh Twenty Thousand Five Hundred Only"
+Indian number system (lakh, crore — not million, billion)
+Bank Details Box:
+
+Bank Name, Account Number, IFSC Code, Branch Name
+QR Code:
+
+Har invoice pe ek QR code generate karo
+QR mein encode karo: Invoice Number, Date, Buyer Name, Grand Total, GSTIN
+Declaration/Terms:
+
+Company ka declaration text
+"This is a computer generated invoice"
+Watermark (optional):
+
+Background mein diagonal text (e.g., "PAID", "DRAFT")
+Configurable: text, font, color, opacity, size
+Signature Block:
+
+"Authorized Signatory" line
+Company name ke saath
+Buttons (print hide hote hain):
+
+Print / Save as PDF button
+Edit Invoice
+Duplicate Invoice
+Back to History
+Page 4: BILLING HISTORY (/history)
+Search & Filter:
+
+Search bar: invoice number ya customer name se dhundho
+Status filter dropdown: All / Draft / Pending / Paid / Cancelled
+Table:
+
+Columns: Invoice No, Date, Customer Name, Amount (₹), Status, Actions
+Pagination (50 per page)
+Action buttons: View (eye), Edit (pencil), Duplicate (copy), Delete (trash)
+Empty state: "No invoices found" message
+
+Page 5: CUSTOMERS (/customers)
+Customer List:
+
+Search bar
+Table: Name, GSTIN, Phone, Email, State, Actions
+Add New Customer button
+Customer Form (modal/dialog):
+
+Name* (required)
+Address* (required)
+GSTIN (optional, validate format)
+State Name + State Code (dropdown with all Indian states)
+Email, Phone
+Actions: Edit, Delete (with confirmation)
+
+Page 6: PRODUCTS (/products)
+Product Catalog:
+
+Search bar
+Table: Name, Code, HSN/SAC, Unit, Rate (₹), Tax %, Actions
+Product Form (modal/dialog):
+
+Name* (required)
+Product Code (optional)
+HSN/SAC Code (optional)
+Unit: PCS / KG / LTR / MTR / BOX / DOZEN / SET / NOS (dropdown)
+Rate (₹) per unit
+Tax %: 0 / 5 / 12 / 18 / 28 (GST slabs dropdown)
+Actions: Edit, Delete
+
+Page 7: COMPANY PROFILE (/company)
+Tab 1 — Business Details:
+
+Company Name* (required)
+Address* (required)
+GSTIN (15 character format)
+State Name + State Code
+Email* (required)
+Phone
+Tab 2 — Bank Details:
+
+Bank Name
+Account Number
+IFSC Code
+Branch Name
+Tab 3 — Invoice Settings:
+
+Invoice Prefix (e.g., "INV", "BILL", "GST")
+Declaration Text (terms & conditions)
+Authorized Signatory Name
+Tab 4 — Watermark Settings:
+
+Enable/Disable watermark toggle
+Watermark Text (e.g., "PAID", "CONFIDENTIAL")
+Font (serif/sans-serif/monospace)
+Color (color picker)
+Opacity (0–100% slider)
+Size (small/medium/large)
+Tab 5 — Email/SMTP Settings:
+
+SMTP Host, Port
+Username, Password
+From Name
+Secure (TLS toggle)
+Save button — sab tabs ka data ek saath save
+
+Page 8: SETTINGS (/settings)
+Appearance:
+
+Light Mode / Dark Mode toggle
+Theme persists in localStorage
+About:
+
+App version
+Stack information
+UI/UX REQUIREMENTS
+Layout
+Sidebar navigation (left side, fixed) with icons + labels
+Mobile responsive — hamburger menu pe click karo to drawer khule
+Sidebar items:
+Dashboard (home icon)
+New Invoice (plus icon)
+History (list icon)
+Customers (users icon)
+Products (box icon)
+Company (building icon)
+Settings (gear icon)
+Design System
+shadcn/ui components use karo: Button, Input, Select, Dialog, Table, Badge, Card, Tabs, Sheet, Tooltip
+Tailwind CSS for styling
+Dark mode support — dark: classes
+Indian Rupee symbol: ₹
+Number formatting: Indian system (1,00,000 not 100,000)
+Color Coding
+Status badges:
+draft → grey
+pending → amber/yellow
+paid → green
+cancelled → red
+BUSINESS LOGIC
+GST Calculation
+1. Rate × Quantity = Base Amount
+2. Base Amount × (1 - Discount%/100) = Taxable Value
+3. If intra-state:
+   CGST = Taxable Value × (Tax%/2) / 100
+   SGST = Taxable Value × (Tax%/2) / 100
+   IGST = 0
+4. If inter-state:
+   CGST = 0, SGST = 0
+   IGST = Taxable Value × Tax% / 100
+5. Total = Taxable Value + CGST + SGST + IGST
+6. Grand Total = Sum of all item Totals
+7. Round to 2 decimal places
+
+Amount in Words (Indian System)
+1 lakh = 1,00,000
+1 crore = 1,00,00,000
+Example: ₹1,25,430 → "Rupees One Lakh Twenty-Five Thousand Four Hundred Thirty Only"
+
+Invoice Number Auto-generation
+Format: {prefix}-{counter padded to 4 digits}
+Example: INV-0001, INV-0002, BILL-0023
+Counter increments on every new invoice (including duplicates)
+Stored in company table's invoice_counter column
+
+Duplicate Invoice
+- Original invoice copy karo
+- New invoice number assign karo (next counter)
+- Date: aaj ki date set karo
+- Status: "draft" set karo
+- Sab doosra data same rakho
+
+INDIAN STATES LIST
+Sab 28 states + 8 union territories ka dropdown banao with state codes:
+
+01 - Jammu & Kashmir
+02 - Himachal Pradesh
+03 - Punjab
+04 - Chandigarh
+05 - Uttarakhand
+06 - Haryana
+07 - Delhi
+08 - Rajasthan
+09 - Uttar Pradesh
+10 - Bihar
+11 - Sikkim
+12 - Arunachal Pradesh
+13 - Nagaland
+14 - Manipur
+15 - Mizoram
+16 - Tripura
+17 - Meghalaya
+18 - Assam
+19 - West Bengal
+20 - Jharkhand
+21 - Odisha
+22 - Chhattisgarh
+23 - Madhya Pradesh
+24 - Gujarat
+25 - Daman & Diu
+26 - Dadra & Nagar Haveli
+27 - Maharashtra
+28 - Andhra Pradesh
+29 - Karnataka
+30 - Goa
+31 - Lakshadweep
+32 - Kerala
+33 - Tamil Nadu
+34 - Puducherry
+35 - Andaman & Nicobar Islands
+36 - Telangana
+37 - Andhra Pradesh (New)
+38 - Ladakh
+
+PRINT / PDF REQUIREMENTS
+A4 size layout (210mm × 297mm)
+Print ke waqt sidebar, buttons, header hide ho jaayein
+@media print CSS use karo
+Font: serif (Times New Roman jaisi) for professional look
+Table borders: thin black lines
+Company name: 18-20pt bold
+"TAX INVOICE" heading: center aligned, 14pt bold, with box border
+Amount in words: italic
+QR code: bottom-right corner, 80×80px
+VALIDATION RULES
+Field	Rule
+GSTIN	15 characters: ^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$
+Invoice Number	Unique, required
+Invoice Date	Required, valid date
+Buyer Name	Required
+Buyer Address	Required
+Company Name	Required
+Company Email	Required, valid email
+Item Rate	> 0
+Item Quantity	> 0
+Tax %	0, 5, 12, 18, ya 28
+ERROR HANDLING
+Form validation errors: field ke neeche red text
+API errors: Toast notification (top-right corner)
+Empty states: friendly message with CTA button
+404 pages: "Page not found" with back button
+Loading states: Skeleton loaders ya spinner
+OPTIONAL ADVANCED FEATURES
+Email Invoice: SMTP se customer ko PDF email karo
+Logo Upload: Company logo upload karo (base64 ya file server)
+Export to Excel: Invoices ki CSV/Excel export
+Multi-user: Login system (future scope)
+Recurring Invoices: Monthly auto-generate
+Payment Tracking: Partial payments record karo
+FOLDER STRUCTURE (Recommended)
+project/
+├── src/
+│   ├── api/           ← Express routes (company, customers, products, invoices, dashboard)
+│   ├── db/
+│   │   └── schema/    ← Drizzle table definitions
+│   ├── frontend/
+│   │   ├── pages/     ← Dashboard, InvoiceForm, Preview, History, Customers, Products, Company, Settings
+│   │   ├── components/ ← AppLayout, InvoiceTable, ProductAutocomplete, StatCard, etc.
+│   │   └── lib/       ← GST calculator, amount-in-words, Indian number formatter
+│   └── shared/        ← TypeScript types shared between frontend & backend
+└── openapi.yaml       ← API contract (optional, for codegen)
+
+EXAMPLE USER FLOW
+1. Pehli baar: Company Profile fill karo (naam, address, GSTIN, bank details)
+2. Products add karo (ek baar catalog mein, baar baar use karo)
+3. Customers add karo
+4. "New Invoice" click karo
+5. Customer select karo → details auto-fill
+6. Items add karo → product autocomplete se select karo → tax auto-calculate
+7. GST mode set karo (intra/inter state)
+8. Save & Preview
+9. Print ya Save as PDF
+10. History mein status update karo (Paid)

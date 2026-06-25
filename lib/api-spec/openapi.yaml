@@ -1,22 +1,31 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: BillEase GST Invoice Generator API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: company
+    description: Company profile
+  - name: customers
+    description: Customer management
+  - name: products
+    description: Product catalog
+  - name: invoices
+    description: Invoice management
+  - name: dashboard
+    description: Dashboard stats
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +33,376 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /company:
+    get:
+      operationId: getCompany
+      tags: [company]
+      summary: Get company profile
+      responses:
+        "200":
+          description: Company profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Company"
+    put:
+      operationId: updateCompany
+      tags: [company]
+      summary: Update company profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompanyInput"
+      responses:
+        "200":
+          description: Updated company
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Company"
+
+  /customers:
+    get:
+      operationId: listCustomers
+      tags: [customers]
+      summary: List all customers
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Customer"
+    post:
+      operationId: createCustomer
+      tags: [customers]
+      summary: Create a new customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerInput"
+      responses:
+        "201":
+          description: Created customer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+
+  /customers/{id}:
+    put:
+      operationId: updateCustomer
+      tags: [customers]
+      summary: Update a customer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerInput"
+      responses:
+        "200":
+          description: Updated customer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+    delete:
+      operationId: deleteCustomer
+      tags: [customers]
+      summary: Delete a customer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  /products:
+    get:
+      operationId: listProducts
+      tags: [products]
+      summary: List all products
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+    post:
+      operationId: createProduct
+      tags: [products]
+      summary: Create a new product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "201":
+          description: Created product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+
+  /products/{id}:
+    put:
+      operationId: updateProduct
+      tags: [products]
+      summary: Update a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "200":
+          description: Updated product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+    delete:
+      operationId: deleteProduct
+      tags: [products]
+      summary: Delete a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  /invoices:
+    get:
+      operationId: listInvoices
+      tags: [invoices]
+      summary: List invoices with optional search/filter/pagination
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Paginated invoice list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvoiceListResponse"
+    post:
+      operationId: createInvoice
+      tags: [invoices]
+      summary: Create a new invoice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InvoiceInput"
+      responses:
+        "201":
+          description: Created invoice
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invoice"
+
+  /invoices/next-number:
+    get:
+      operationId: getNextInvoiceNumber
+      tags: [invoices]
+      summary: Get next auto-generated invoice number
+      responses:
+        "200":
+          description: Next invoice number
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NextInvoiceNumber"
+
+  /invoices/{id}:
+    get:
+      operationId: getInvoice
+      tags: [invoices]
+      summary: Get a single invoice
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Invoice detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invoice"
+    put:
+      operationId: updateInvoice
+      tags: [invoices]
+      summary: Update an invoice
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InvoiceInput"
+      responses:
+        "200":
+          description: Updated invoice
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invoice"
+    delete:
+      operationId: deleteInvoice
+      tags: [invoices]
+      summary: Delete an invoice
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  /invoices/{id}/duplicate:
+    post:
+      operationId: duplicateInvoice
+      tags: [invoices]
+      summary: Duplicate an invoice with a new number and today's date
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "201":
+          description: Duplicated invoice
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invoice"
+
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Dashboard stats - total invoices, monthly revenue, tax collected, avg value
+      responses:
+        "200":
+          description: Dashboard summary stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /dashboard/recent-invoices:
+    get:
+      operationId: getRecentInvoices
+      tags: [dashboard]
+      summary: Last 10 recent invoices
+      responses:
+        "200":
+          description: Recent invoices list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Invoice"
+
+  /dashboard/monthly-revenue:
+    get:
+      operationId: getMonthlyRevenue
+      tags: [dashboard]
+      summary: Last 12 months revenue data for bar chart
+      responses:
+        "200":
+          description: Monthly revenue data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MonthlyRevenue"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +413,511 @@ components:
       required:
         - status
 
+    Company:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        address:
+          type: string
+        gstin:
+          type: ["string", "null"]
+        state_name:
+          type: ["string", "null"]
+        state_code:
+          type: ["string", "null"]
+        email:
+          type: string
+        phone:
+          type: ["string", "null"]
+        bank_name:
+          type: ["string", "null"]
+        account_number:
+          type: ["string", "null"]
+        ifsc_code:
+          type: ["string", "null"]
+        branch_name:
+          type: ["string", "null"]
+        logo_url:
+          type: ["string", "null"]
+        declaration_text:
+          type: ["string", "null"]
+        authorized_signatory:
+          type: ["string", "null"]
+        invoice_prefix:
+          type: ["string", "null"]
+        invoice_counter:
+          type: ["integer", "null"]
+        watermark_text:
+          type: ["string", "null"]
+        watermark_font:
+          type: ["string", "null"]
+        watermark_opacity:
+          type: ["string", "null"]
+        watermark_color:
+          type: ["string", "null"]
+        watermark_size:
+          type: ["string", "null"]
+        smtp_host:
+          type: ["string", "null"]
+        smtp_port:
+          type: ["string", "null"]
+        smtp_user:
+          type: ["string", "null"]
+        smtp_from_name:
+          type: ["string", "null"]
+        smtp_secure:
+          type: ["string", "null"]
+        created_at:
+          type: string
+        updated_at:
+          type: string
+      required:
+        - id
+        - name
+        - address
+        - email
+        - created_at
+        - updated_at
+
+    CompanyInput:
+      type: object
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+        gstin:
+          type: ["string", "null"]
+        state_name:
+          type: ["string", "null"]
+        state_code:
+          type: ["string", "null"]
+        email:
+          type: string
+        phone:
+          type: ["string", "null"]
+        bank_name:
+          type: ["string", "null"]
+        account_number:
+          type: ["string", "null"]
+        ifsc_code:
+          type: ["string", "null"]
+        branch_name:
+          type: ["string", "null"]
+        logo_url:
+          type: ["string", "null"]
+        declaration_text:
+          type: ["string", "null"]
+        authorized_signatory:
+          type: ["string", "null"]
+        invoice_prefix:
+          type: ["string", "null"]
+        watermark_text:
+          type: ["string", "null"]
+        watermark_font:
+          type: ["string", "null"]
+        watermark_opacity:
+          type: ["string", "null"]
+        watermark_color:
+          type: ["string", "null"]
+        watermark_size:
+          type: ["string", "null"]
+        smtp_host:
+          type: ["string", "null"]
+        smtp_port:
+          type: ["string", "null"]
+        smtp_user:
+          type: ["string", "null"]
+        smtp_from_name:
+          type: ["string", "null"]
+        smtp_secure:
+          type: ["string", "null"]
+      required:
+        - name
+        - address
+        - email
+
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        address:
+          type: string
+        gstin:
+          type: ["string", "null"]
+        state_name:
+          type: ["string", "null"]
+        state_code:
+          type: ["string", "null"]
+        email:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        created_at:
+          type: string
+      required:
+        - id
+        - name
+        - address
+        - created_at
+
+    CustomerInput:
+      type: object
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+        gstin:
+          type: ["string", "null"]
+        state_name:
+          type: ["string", "null"]
+        state_code:
+          type: ["string", "null"]
+        email:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+      required:
+        - name
+        - address
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        code:
+          type: ["string", "null"]
+        hsn_sac:
+          type: ["string", "null"]
+        unit:
+          type: string
+        rate:
+          type: number
+        tax_percent:
+          type: number
+        created_at:
+          type: string
+      required:
+        - id
+        - name
+        - unit
+        - rate
+        - tax_percent
+        - created_at
+
+    ProductInput:
+      type: object
+      properties:
+        name:
+          type: string
+        code:
+          type: ["string", "null"]
+        hsn_sac:
+          type: ["string", "null"]
+        unit:
+          type: string
+        rate:
+          type: number
+        tax_percent:
+          type: number
+      required:
+        - name
+        - unit
+        - rate
+        - tax_percent
+
+    InvoiceItem:
+      type: object
+      properties:
+        description:
+          type: string
+        hsnSac:
+          type: string
+        unit:
+          type: string
+        quantity:
+          type: number
+        rate:
+          type: number
+        discountPercent:
+          type: number
+        taxPercent:
+          type: number
+        amount:
+          type: number
+        cgstPercent:
+          type: number
+        cgstAmount:
+          type: number
+        sgstPercent:
+          type: number
+        sgstAmount:
+          type: number
+        igstPercent:
+          type: number
+        igstAmount:
+          type: number
+        total:
+          type: number
+      required:
+        - description
+        - unit
+        - quantity
+        - rate
+        - discountPercent
+        - taxPercent
+        - amount
+        - total
+
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: integer
+        invoice_number:
+          type: string
+        invoice_date:
+          type: string
+        e_way_bill_number:
+          type: ["string", "null"]
+        delivery_note:
+          type: ["string", "null"]
+        payment_terms:
+          type: ["string", "null"]
+        supplier_ref:
+          type: ["string", "null"]
+        other_ref:
+          type: ["string", "null"]
+        buyer_order_number:
+          type: ["string", "null"]
+        order_date:
+          type: ["string", "null"]
+        buyer_name:
+          type: string
+        buyer_address:
+          type: string
+        buyer_gstin:
+          type: ["string", "null"]
+        buyer_phone:
+          type: ["string", "null"]
+        buyer_state_name:
+          type: ["string", "null"]
+        buyer_state_code:
+          type: ["string", "null"]
+        dispatch_doc_number:
+          type: ["string", "null"]
+        delivery_note_date:
+          type: ["string", "null"]
+        dispatched_through:
+          type: ["string", "null"]
+        destination:
+          type: ["string", "null"]
+        terms_of_delivery:
+          type: ["string", "null"]
+        subtotal:
+          type: number
+        discount_amount:
+          type: number
+        taxable_value:
+          type: number
+        cgst_total:
+          type: number
+        sgst_total:
+          type: number
+        igst_total:
+          type: number
+        grand_total:
+          type: number
+        amount_in_words:
+          type: string
+        payment_mode:
+          type: string
+        status:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/InvoiceItem"
+        created_at:
+          type: string
+        updated_at:
+          type: string
+      required:
+        - id
+        - invoice_number
+        - invoice_date
+        - buyer_name
+        - buyer_address
+        - subtotal
+        - discount_amount
+        - taxable_value
+        - cgst_total
+        - sgst_total
+        - igst_total
+        - grand_total
+        - amount_in_words
+        - payment_mode
+        - status
+        - items
+        - created_at
+        - updated_at
+
+    InvoiceInput:
+      type: object
+      properties:
+        invoice_number:
+          type: string
+        invoice_date:
+          type: string
+        e_way_bill_number:
+          type: ["string", "null"]
+        delivery_note:
+          type: ["string", "null"]
+        payment_terms:
+          type: ["string", "null"]
+        supplier_ref:
+          type: ["string", "null"]
+        other_ref:
+          type: ["string", "null"]
+        buyer_order_number:
+          type: ["string", "null"]
+        order_date:
+          type: ["string", "null"]
+        buyer_name:
+          type: string
+        buyer_address:
+          type: string
+        buyer_gstin:
+          type: ["string", "null"]
+        buyer_phone:
+          type: ["string", "null"]
+        buyer_state_name:
+          type: ["string", "null"]
+        buyer_state_code:
+          type: ["string", "null"]
+        dispatch_doc_number:
+          type: ["string", "null"]
+        delivery_note_date:
+          type: ["string", "null"]
+        dispatched_through:
+          type: ["string", "null"]
+        destination:
+          type: ["string", "null"]
+        terms_of_delivery:
+          type: ["string", "null"]
+        subtotal:
+          type: number
+        discount_amount:
+          type: number
+        taxable_value:
+          type: number
+        cgst_total:
+          type: number
+        sgst_total:
+          type: number
+        igst_total:
+          type: number
+        grand_total:
+          type: number
+        amount_in_words:
+          type: string
+        payment_mode:
+          type: string
+        status:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/InvoiceItem"
+      required:
+        - invoice_number
+        - invoice_date
+        - buyer_name
+        - buyer_address
+        - subtotal
+        - discount_amount
+        - taxable_value
+        - cgst_total
+        - sgst_total
+        - igst_total
+        - grand_total
+        - amount_in_words
+        - payment_mode
+        - status
+        - items
+
+    InvoiceListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Invoice"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+      required:
+        - data
+        - total
+        - page
+        - limit
+
+    NextInvoiceNumber:
+      type: object
+      properties:
+        invoice_number:
+          type: string
+      required:
+        - invoice_number
+
+    DashboardSummary:
+      type: object
+      properties:
+        total_invoices:
+          type: integer
+        monthly_revenue:
+          type: number
+        tax_collected:
+          type: number
+        avg_invoice_value:
+          type: number
+      required:
+        - total_invoices
+        - monthly_revenue
+        - tax_collected
+        - avg_invoice_value
+
+    MonthlyRevenue:
+      type: object
+      properties:
+        month:
+          type: string
+        revenue:
+          type: number
+      required:
+        - month
+        - revenue
+
+    DeleteResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+        - success
+        - message
