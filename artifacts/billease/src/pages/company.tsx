@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
-import { INDIAN_STATES } from "@/lib/indian-utils";
+import { StateCombobox } from "@/components/state-combobox";
 import { Save } from "lucide-react";
 
 const companySchema = z.object({
@@ -195,14 +195,14 @@ export default function Company() {
                     <FormField control={form.control} name="state_code" render={({ field }) => (
                       <FormItem>
                         <FormLabel>State</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl><SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger></FormControl>
-                          <SelectContent>
-                            {INDIAN_STATES.map((state) => (
-                              <SelectItem key={state.code} value={state.code}>{state.code} - {state.name}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <StateCombobox
+                          value={field.value || ""}
+                          onSelect={(code, name) => {
+                            field.onChange(code);
+                            form.setValue("state_name", name);
+                          }}
+                          placeholder="Type state name..."
+                        />
                         <FormMessage />
                       </FormItem>
                     )} />

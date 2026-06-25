@@ -56,7 +56,23 @@ export default function InvoicePreview() {
 
   const taxSummaryList = Object.values(taxSummary);
 
-  const qrData = `Inv:${invoice.invoice_number}|Dt:${invoice.invoice_date}|To:${invoice.buyer_name}|Total:${invoice.grand_total}`;
+  const descriptions = invoice.items.map((it: any) => it.description).join(", ");
+  const qrData = [
+    `Vendor: ${company.name}`,
+    `Invoice No: ${invoice.invoice_number}`,
+    `Date: ${invoice.invoice_date}`,
+    `Mode: ${invoice.payment_mode}`,
+    `Bill To: ${invoice.buyer_name}`,
+    invoice.buyer_phone ? `Mobile: ${invoice.buyer_phone}` : null,
+    `Items: ${descriptions}`,
+    `Subtotal: ${invoice.subtotal}`,
+    `Taxable Value: ${invoice.taxable_value}`,
+    invoice.cgst_total > 0 ? `CGST: ${invoice.cgst_total}` : null,
+    invoice.sgst_total > 0 ? `SGST: ${invoice.sgst_total}` : null,
+    invoice.igst_total > 0 ? `IGST: ${invoice.igst_total}` : null,
+    `Grand Total: ${invoice.grand_total}`,
+    invoice.buyer_gstin ? `GSTIN: ${invoice.buyer_gstin}` : null,
+  ].filter(Boolean).join("\n");
 
   return (
     <div className="max-w-[210mm] mx-auto space-y-6 pb-20 animate-in fade-in duration-500">

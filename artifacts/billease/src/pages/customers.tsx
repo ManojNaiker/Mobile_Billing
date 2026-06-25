@@ -13,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { INDIAN_STATES } from "@/lib/indian-utils";
+import { StateCombobox } from "@/components/state-combobox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
@@ -208,20 +208,14 @@ export default function Customers() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>State</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select state" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {INDIAN_STATES.map((state) => (
-                                <SelectItem key={state.code} value={state.code}>
-                                  {state.code} - {state.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <StateCombobox
+                            value={field.value || ""}
+                            onSelect={(code, name) => {
+                              field.onChange(code);
+                              form.setValue("state_name", name);
+                            }}
+                            placeholder="Type state name..."
+                          />
                           <FormMessage />
                         </FormItem>
                       )}

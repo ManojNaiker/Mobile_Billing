@@ -21,7 +21,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { calculateInvoiceItem, calculateInvoiceTotals } from "@/lib/invoice-utils";
-import { numberToWordsIndian, formatIndianCurrency, INDIAN_STATES } from "@/lib/indian-utils";
+import { numberToWordsIndian, formatIndianCurrency } from "@/lib/indian-utils";
+import { StateCombobox } from "@/components/state-combobox";
 import { Trash2, Plus, Save, Eye } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -379,30 +380,29 @@ export default function InvoiceForm() {
                   )} />
                   <FormField control={form.control} name="buyer_phone" render={({ field }) => (
                     <FormItem>
-                      <FormControl><Input placeholder="Phone" {...field} value={field.value || ""} /></FormControl>
+                      <FormLabel className="text-xs text-muted-foreground">Mobile Number</FormLabel>
+                      <FormControl><Input placeholder="Mobile Number" {...field} value={field.value || ""} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField control={form.control} name="buyer_state_code" render={({ field }) => (
-                    <FormItem>
-                      <Select onValueChange={(v) => {
-                        field.onChange(v);
-                        const st = INDIAN_STATES.find(s => s.code === v);
-                        if(st) form.setValue('buyer_state_name', st.name);
-                      }} value={field.value || ""}>
-                        <FormControl><SelectTrigger><SelectValue placeholder="State" /></SelectTrigger></FormControl>
-                        <SelectContent>
-                          {INDIAN_STATES.map((state) => (
-                            <SelectItem key={state.code} value={state.code}>{state.code} - {state.name}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                </div>
+                <FormField control={form.control} name="buyer_state_code" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs text-muted-foreground">State</FormLabel>
+                    <StateCombobox
+                      value={field.value || ""}
+                      onSelect={(code, name) => {
+                        field.onChange(code);
+                        form.setValue("buyer_state_name", name);
+                        if (company?.state_code) {
+                          form.setValue("is_inter_state", company.state_code !== code);
+                        }
+                      }}
+                      placeholder="Type state name..."
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )} />
               </CardContent>
             </Card>
           </div>
