@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { INDIAN_STATES } from "@/lib/indian-utils";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -15,7 +16,8 @@ export function StateCombobox({ value, onSelect, placeholder = "Type state name.
   const selectedState = INDIAN_STATES.find(s => s.code === value);
   const [query, setQuery] = useState(selectedState?.name ?? "");
   const [open, setOpen] = useState(false);
-  const listRef = useRef<HTMLDivElement>(null);
+  const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const state = INDIAN_STATES.find(s => s.code === value);
@@ -28,6 +30,24 @@ export function StateCombobox({ value, onSelect, placeholder = "Type state name.
         s.name.toLowerCase().includes(query.toLowerCase()) ||
         s.code.toLowerCase().includes(query.toLowerCase())
       );
+
+  const updateDropdownPosition = () => {
+    if (inputRef.current) {
+      const rect = inputRef.current.getBoundingClientRect();
+      setDropdownStyle({
+        position: "fixed",
+        top: rect.bottom + 4,
+        left: rect.left,
+        width: rect.width,
+        zIndex: 9999,
+      });
+    }
+  };
+
+  const handleFocus = () => {
+    updateDropdownPosition();
+    setOpen(true);
+  };
 
   const handleBlur = () => {
     setTimeout(() => {
@@ -43,30 +63,33 @@ export function StateCombobox({ value, onSelect, placeholder = "Type state name.
     setOpen(false);
   };
 
+  useEffect(() => {
+    if (!open) return;
+    const handleScroll = () => updateDropdownPosition();
+    window.addEventListener("scroll", handleScroll, true);
+    return () => window.removeEventListener("scroll", handleScroll, true);
+  }, [open]);
+
   return (
     <div className={cn("relative", className)}>
       <div className="relative">
         <MapPin className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
         <Input
-          className="pl-8 pr-12"
+          ref={inputRef}
+          className="pl-8"
           placeholder={placeholder}
           value={query}
-          onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
-          onFocus={() => setOpen(true)}
+          onChange={(e) => { setQuery(e.target.value); updateDropdownPosition(); setOpen(true); }}
+          onFocus={handleFocus}
           onBlur={handleBlur}
           autoComplete="off"
         />
-        {value && (
-          <span className="absolute right-2.5 top-2 text-xs text-muted-foreground font-mono bg-muted px-1.5 py-0.5 rounded">
-            {value}
-          </span>
-        )}
       </div>
 
-      {open && filtered.length > 0 && (
+      {open && filtered.length > 0 && createPortal(
         <div
-          ref={listRef}
-          className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-lg max-h-52 overflow-y-auto"
+          style={dropdownStyle}
+          className="bg-popover border border-border rounded-md shadow-lg max-h-52 overflow-y-auto"
         >
           {filtered.map((state) => (
             <button
@@ -85,7 +108,8 @@ export function StateCombobox({ value, onSelect, placeholder = "Type state name.
               <span className="text-xs text-muted-foreground font-mono shrink-0">{state.code}</span>
             </button>
           ))}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
