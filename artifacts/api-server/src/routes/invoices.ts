@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { db } from "@workspace/db";
 import { invoicesTable, companyTable } from "@workspace/db";
-import { eq, ilike, or, desc } from "drizzle-orm";
+import { eq, ilike, or, desc, sql } from "drizzle-orm";
 
 const router = Router();
 
@@ -41,6 +41,7 @@ function amountInWords(amount: number): string {
 // GET /api/invoices/next-number
 router.get("/next-number", async (req, res) => {
   try {
+    res.setHeader("Cache-Control", "no-store");
     const company = await db.select().from(companyTable).limit(1);
     const prefix = company[0]?.invoice_prefix || "INV";
     const counter = company[0]?.invoice_counter || 1;
@@ -107,13 +108,8 @@ router.post("/", async (req, res) => {
 
     const [created] = await db.insert(invoicesTable).values(body).returning();
 
-    // Increment company counter
-    const company = await db.select().from(companyTable).limit(1);
-    if (company.length > 0) {
-      await db.update(companyTable)
-        .set({ invoice_counter: (company[0].invoice_counter || 1) + 1 })
-        .where(eq(companyTable.id, company[0].id));
-    }
+    // Atomically increment company counter
+    await db.execute(sql`UPDATE company SET invoice_counter = COALESCE(invoice_counter, 1) + 1`);
 
     return res.status(201).json(created);
   } catch (err) {
