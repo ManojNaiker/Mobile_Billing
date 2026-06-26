@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "ZcTutpOjgnmbzDM08QlDg"
+uri = "file://INSTALL.txt"
+type = "text"
+title = "INSTALL.txt — Windows Setup Guide (Step-by-Step)"

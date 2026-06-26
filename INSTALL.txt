@@ -1,0 +1,221 @@
+================================================================
+  BillEase — GST Invoice Generator
+  Windows Setup Guide (Step-by-Step)
+  Hindi + English Mixed — Coding Knowledge NOT Required
+================================================================
+
+IMPORTANT: Ye sab steps ek baar hi karne hain.
+Uske baad sirf ek double-click se app start hogi.
+
+================================================================
+STEP 1 — Node.js Install Karo
+================================================================
+
+1. Browser mein jaao:  https://nodejs.org
+2. "LTS" wala green button click karo (jaise v20.x.x LTS)
+3. Download hone ke baad installer (.msi file) run karo
+4. "Next > Next > Install > Finish" karo — bas.
+
+Check karo ki install hua:
+  - Windows key dabao, type karo: cmd  → Enter
+  - Type karo:  node --version
+  - Agar v20.x.x ya usse bada dikhe toh OK hai ✓
+
+
+================================================================
+STEP 2 — pnpm Install Karo (Package Manager)
+================================================================
+
+Same Command Prompt mein ye command type karo:
+
+  npm install -g pnpm
+
+Phir check karo:
+  pnpm --version
+
+Kuch number aana chahiye (jaise 10.x.x) ✓
+
+
+================================================================
+STEP 3 — PostgreSQL Database Install Karo
+================================================================
+
+Option A — Local install (recommended):
+  1. Jaao:  https://www.postgresql.org/download/windows/
+  2. "Download the installer" click karo
+  3. Installer run karo → Next > Next
+  4. PASSWORD poochega — koi bhi strong password rakho
+     (yaad rakhna! .env mein daalega)
+  5. Port: 5432 (default rehne do)
+  6. Install complete karo
+
+Option B — Free Cloud database (no install needed):
+  1. Jaao:  https://neon.tech  (ya  https://supabase.com)
+  2. Free account banao
+  3. New project banao → "Connection String" copy karo
+  4. Woh string .env file mein DATABASE_URL mein paste karo
+  Skip to STEP 5 agar Cloud choose kiya.
+
+
+================================================================
+STEP 4 — Local Database Setup (sirf Option A ke liye)
+================================================================
+
+1. Windows key → type: pgAdmin → Open
+2. "Servers" > "PostgreSQL" double-click karo
+3. Password daalo (jo Step 3 mein set kiya tha)
+4. Left panel mein: Databases → right-click → "Create > Database"
+5. Name daalo:  billease  → Save
+
+Ab CONNECTION STRING ready hai:
+  postgresql://postgres:YOUR_PASSWORD@localhost:5432/billease
+  (YOUR_PASSWORD ki jagah apna password daalo)
+
+
+================================================================
+STEP 5 — Project Files Download Karo
+================================================================
+
+1. Project ka ZIP file download karo (Replit se "Download as zip")
+2. Kisi folder mein extract karo, jaise:
+     C:\BillEase\
+
+Folder structure aisa dikhega:
+  C:\BillEase\
+    artifacts\
+    lib\
+    scripts\
+    package.json
+    .env.example    ← ye file
+    INSTALL.txt     ← ye file
+
+
+================================================================
+STEP 6 — .env File Banao
+================================================================
+
+1. C:\BillEase\ folder mein jaao
+2. ".env.example" file ko copy karo
+3. Copy ka naam badlo:  .env   (sirf .env, kuch aur nahi)
+   (Windows mein: right-click → Rename → .env → Enter)
+4. .env file ko Notepad mein kholo:
+     - Right-click → "Open with" → Notepad
+5. DATABASE_URL ki value apni connection string se badlo:
+     DATABASE_URL=postgresql://postgres:APNA_PASSWORD@localhost:5432/billease
+6. SESSION_SECRET mein koi bhi 40+ character ka random text daalo:
+     SESSION_SECRET=mera-billease-app-secret-2024-koi-bhi-lambi-string
+7. Save karo (Ctrl+S)
+
+
+================================================================
+STEP 7 — Dependencies Install Karo
+================================================================
+
+1. C:\BillEase\ folder mein jaao
+2. Address bar mein click karo → type karo:  cmd  → Enter
+   (Isse Command Prompt us folder mein khulega)
+3. Ye command type karo:
+
+     pnpm install
+
+   Internet se packages download hoga (5-10 minute lag sakte hain)
+   Kuch warnings aa sakti hain — ignore karo, errors nahi aane chahiye.
+
+
+================================================================
+STEP 8 — Database Tables Banao (sirf pehli baar)
+================================================================
+
+Command Prompt mein (same folder C:\BillEase\) type karo:
+
+  pnpm --filter @workspace/db run push
+
+"Changes applied" ya kuch aisa message aana chahiye ✓
+
+
+================================================================
+STEP 9 — App Start Karo
+================================================================
+
+Do alag Command Prompt windows kholni hongi:
+
+--- Window 1 (API Server) ---
+C:\BillEase\ mein CMD kholo aur type karo:
+  pnpm --filter @workspace/api-server run dev
+
+"Server listening port: 8080" dikhega ✓
+
+--- Window 2 (Frontend/Website) ---
+Doosri CMD window kholo (same folder) aur type karo:
+  pnpm --filter @workspace/billease run dev
+
+Kuch aisa dikhega:
+  ➜  Local:   http://localhost:21071/
+
+----------------------------------------------------------------
+BROWSER MEIN KHOLO:  http://localhost:21071
+----------------------------------------------------------------
+
+BillEase app open ho jayegi! 🎉
+
+
+================================================================
+SHORTCUT — Start Karne Ka Aasaan Tarika
+================================================================
+
+Ek baar setup hone ke baad, rooz start karne ke liye:
+
+1. "start-billease.bat" naam ki file banao C:\BillEase\ mein
+2. Notepad mein kholo aur ye paste karo:
+
+----------------------------------------
+@echo off
+echo Starting BillEase...
+start "API Server" cmd /k "pnpm --filter @workspace/api-server run dev"
+timeout /t 5 /nobreak >nul
+start "Frontend" cmd /k "pnpm --filter @workspace/billease run dev"
+timeout /t 5 /nobreak >nul
+start "" "http://localhost:21071"
+echo BillEase started! Browser mein khul jayega.
+----------------------------------------
+
+3. Save karo → naam badlo:  start-billease.bat
+4. Aage se bas is .bat file ko double-click karo!
+
+
+================================================================
+PROBLEMS? COMMON SOLUTIONS
+================================================================
+
+Problem: "pnpm is not recognized"
+Solution: Node.js dobara install karo, phir:  npm install -g pnpm
+
+Problem: Database connection error
+Solution: .env file mein DATABASE_URL check karo
+          Password sahi hai? Database "billease" bana hai?
+
+Problem: Port already in use
+Solution: Purani CMD windows band karo, dobara run karo
+
+Problem: "Cannot find module" error
+Solution: pnpm install dobara run karo
+
+
+================================================================
+COMPANY PROFILE SETUP (Pehli baar app mein)
+================================================================
+
+App khulne ke baad:
+1. Left sidebar → Settings → Company click karo
+2. Company ka naam, address, GSTIN bharo
+3. Bank details bharo
+4. Email (SMTP) settings bharo agar email se invoice bhejna ho
+5. "Save Settings" click karo
+
+Ab invoice banana shuru karo! 📄
+
+
+================================================================
+  Support: App ke andar sab features ready hain.
+  Version: BillEase v1.0
+================================================================
