@@ -126,11 +126,26 @@ STEP 7 — Dependencies Install Karo
 STEP 8 — Database Tables Banao (sirf pehli baar)
 ================================================================
 
+Do tarike hain — koi bhi ek choose karo:
+
+--- TARIKA A: Command se (Recommended) ---
 Command Prompt mein (same folder C:\BillEase\) type karo:
 
   pnpm --filter @workspace/db run push
 
 "Changes applied" ya kuch aisa message aana chahiye ✓
+
+--- TARIKA B: SQL File se (pgAdmin ke through) ---
+Agar Command wala kaam na kare, toh manually SQL chalao:
+
+  1. pgAdmin kholо (Windows Start menu se)
+  2. Left panel: Servers > PostgreSQL > Databases > billease
+  3. "billease" par right-click karo → "Query Tool"
+  4. Project folder mein "create-tables.sql" file kholо
+     (Query Tool mein: File > Open > create-tables.sql select karo)
+  5. F5 dabao ya upar "Execute" (▶) button click karo
+  6. Neeche "Messages" mein:
+     "CREATE TABLE" × 4 dikhega — iska matlab tables ban gaye ✓
 
 
 ================================================================
