@@ -192,67 +192,72 @@ export default function InvoicePreview() {
           </div>
 
           {/* Items Table */}
-          <table className="w-full text-sm">
-            <thead className="border-b border-black">
-              <tr>
-                <th className="border-r border-black p-1">S.No</th>
-                <th className="border-r border-black p-1 text-left">Description of Goods</th>
-                <th className="border-r border-black p-1">HSN/SAC</th>
-                <th className="border-r border-black p-1 text-right">Quantity</th>
-                <th className="border-r border-black p-1 text-right">Rate</th>
-                <th className="border-r border-black p-1 text-right">per</th>
-                <th className="border-r border-black p-1 text-right">Disc. %</th>
-                <th className="p-1 text-right">Amount</th>
+          <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid black' }}>
+                <th style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'center', width: '5%' }}>S.No</th>
+                <th style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'left', width: '35%' }}>Description of Goods</th>
+                <th style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'center', width: '10%' }}>HSN/SAC</th>
+                <th style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'right', width: '8%' }}>Quantity</th>
+                <th style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'right', width: '10%' }}>Rate</th>
+                <th style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'center', width: '6%' }}>per</th>
+                <th style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'right', width: '8%' }}>Disc. %</th>
+                <th style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'right', width: '12%' }}>Amount</th>
               </tr>
             </thead>
-            <tbody style={{ minHeight: '150px' }}>
+            <tbody>
               {invoice.items.map((item: any, i: number) => (
                 <tr key={i}>
-                  <td className="border-r border-black p-1 text-center align-top">{i + 1}</td>
-                  <td className="border-r border-black p-1 align-top font-medium">
+                  <td style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'center', verticalAlign: 'top' }}>{i + 1}</td>
+                  <td style={{ border: '1px solid black', padding: '4px 6px', verticalAlign: 'top', fontWeight: 500 }}>
                     {item.description}
+                    {item.notes && <div style={{ fontSize: '11px', color: '#555', marginTop: '2px' }}>{item.notes}</div>}
                   </td>
-                  <td className="border-r border-black p-1 text-center align-top">{item.hsnSac}</td>
-                  <td className="border-r border-black p-1 text-right align-top">{item.quantity}</td>
-                  <td className="border-r border-black p-1 text-right align-top">{formatIndianCurrency(item.rate).replace('₹', '')}</td>
-                  <td className="border-r border-black p-1 text-right align-top text-xs">{item.unit}</td>
-                  <td className="border-r border-black p-1 text-right align-top">{item.discountPercent > 0 ? item.discountPercent : '-'}</td>
-                  <td className="p-1 text-right align-top">{formatIndianCurrency(item.taxableValue).replace('₹', '')}</td>
+                  <td style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'center', verticalAlign: 'top' }}>{item.hsnSac}</td>
+                  <td style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'right', verticalAlign: 'top' }}>{item.quantity}</td>
+                  <td style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'right', verticalAlign: 'top' }}>{formatIndianCurrency(item.rate).replace('₹', '')}</td>
+                  <td style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'center', verticalAlign: 'top', fontSize: '11px' }}>{item.unit}</td>
+                  <td style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'right', verticalAlign: 'top' }}>{item.discountPercent > 0 ? `${item.discountPercent}%` : '-'}</td>
+                  <td style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'right', verticalAlign: 'top' }}>
+                    {formatIndianCurrency(item.taxableValue ?? (item.rate * item.quantity * (1 - (item.discountPercent || 0) / 100))).replace('₹', '')}
+                  </td>
                 </tr>
               ))}
-              {/* Padding row */}
-              <tr>
-                <td className="border-r border-black p-1 py-8"></td>
-                <td className="border-r border-black p-1"></td>
-                <td className="border-r border-black p-1"></td>
-                <td className="border-r border-black p-1"></td>
-                <td className="border-r border-black p-1"></td>
-                <td className="border-r border-black p-1"></td>
-                <td className="border-r border-black p-1"></td>
-                <td className="p-1"></td>
-              </tr>
+              {/* Blank padding rows */}
+              {Array.from({ length: Math.max(0, 4 - invoice.items.length) }).map((_, i) => (
+                <tr key={`pad-${i}`}>
+                  <td style={{ border: '1px solid black', padding: '4px 6px', height: '28px' }}></td>
+                  <td style={{ border: '1px solid black', padding: '4px 6px' }}></td>
+                  <td style={{ border: '1px solid black', padding: '4px 6px' }}></td>
+                  <td style={{ border: '1px solid black', padding: '4px 6px' }}></td>
+                  <td style={{ border: '1px solid black', padding: '4px 6px' }}></td>
+                  <td style={{ border: '1px solid black', padding: '4px 6px' }}></td>
+                  <td style={{ border: '1px solid black', padding: '4px 6px' }}></td>
+                  <td style={{ border: '1px solid black', padding: '4px 6px' }}></td>
+                </tr>
+              ))}
               {/* Sub Totals */}
               {!isInterState ? (
                 <>
-                  <tr className="font-semibold">
-                    <td className="border-r border-black p-1" colSpan={7} style={{ textAlign: 'right' }}>CGST</td>
-                    <td className="p-1 text-right">{formatIndianCurrency(invoice.cgst_total).replace('₹', '')}</td>
+                  <tr style={{ fontWeight: 600, borderTop: '1px solid black' }}>
+                    <td colSpan={7} style={{ border: '1px solid black', padding: '4px 8px', textAlign: 'right' }}>CGST</td>
+                    <td style={{ border: '1px solid black', padding: '4px 8px', textAlign: 'right' }}>{formatIndianCurrency(invoice.cgst_total).replace('₹', '')}</td>
                   </tr>
-                  <tr className="font-semibold">
-                    <td className="border-r border-black p-1" colSpan={7} style={{ textAlign: 'right' }}>SGST</td>
-                    <td className="p-1 text-right">{formatIndianCurrency(invoice.sgst_total).replace('₹', '')}</td>
+                  <tr style={{ fontWeight: 600 }}>
+                    <td colSpan={7} style={{ border: '1px solid black', padding: '4px 8px', textAlign: 'right' }}>SGST</td>
+                    <td style={{ border: '1px solid black', padding: '4px 8px', textAlign: 'right' }}>{formatIndianCurrency(invoice.sgst_total).replace('₹', '')}</td>
                   </tr>
                 </>
               ) : (
-                <tr className="font-semibold">
-                  <td className="border-r border-black p-1" colSpan={7} style={{ textAlign: 'right' }}>IGST</td>
-                  <td className="p-1 text-right">{formatIndianCurrency(invoice.igst_total).replace('₹', '')}</td>
+                <tr style={{ fontWeight: 600, borderTop: '1px solid black' }}>
+                  <td colSpan={7} style={{ border: '1px solid black', padding: '4px 8px', textAlign: 'right' }}>IGST</td>
+                  <td style={{ border: '1px solid black', padding: '4px 8px', textAlign: 'right' }}>{formatIndianCurrency(invoice.igst_total).replace('₹', '')}</td>
                 </tr>
               )}
               {/* Grand Total */}
-              <tr className="border-t border-black font-bold">
-                <td className="border-r border-black p-1" colSpan={7} style={{ textAlign: 'right' }}>Total</td>
-                <td className="p-1 text-right">{formatIndianCurrency(invoice.grand_total)}</td>
+              <tr style={{ fontWeight: 700, borderTop: '2px solid black' }}>
+                <td colSpan={7} style={{ border: '1px solid black', borderTop: '2px solid black', padding: '4px 8px', textAlign: 'right' }}>Total</td>
+                <td style={{ border: '1px solid black', borderTop: '2px solid black', padding: '4px 8px', textAlign: 'right' }}>{formatIndianCurrency(invoice.grand_total)}</td>
               </tr>
             </tbody>
           </table>
@@ -264,82 +269,75 @@ export default function InvoicePreview() {
           </div>
 
           {/* Tax Summary Table */}
-          <div className="border-t border-black border-b border-black">
-            <table className="w-full text-xs">
-              <thead className="border-b border-black">
-                <tr>
-                  <th className="border-r border-black p-1" rowSpan={2}>HSN/SAC</th>
-                  <th className="border-r border-black p-1" rowSpan={2}>Taxable Value</th>
+          <table className="w-full text-xs" style={{ borderCollapse: 'collapse', borderTop: '1px solid black', borderBottom: '1px solid black' }}>
+            <thead>
+              <tr>
+                <th rowSpan={2} style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'center' }}>HSN/SAC</th>
+                <th rowSpan={2} style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'center' }}>Taxable Value</th>
+                {!isInterState ? (
+                  <>
+                    <th colSpan={2} style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'center' }}>Central Tax</th>
+                    <th colSpan={2} style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'center' }}>State Tax</th>
+                  </>
+                ) : (
+                  <th colSpan={2} style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'center' }}>Integrated Tax</th>
+                )}
+                <th rowSpan={2} style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'center' }}>Total Tax Amount</th>
+              </tr>
+              <tr>
+                <th style={{ border: '1px solid black', padding: '3px 6px', textAlign: 'center' }}>Rate</th>
+                <th style={{ border: '1px solid black', padding: '3px 6px', textAlign: 'center' }}>Amount</th>
+                {!isInterState && (
+                  <>
+                    <th style={{ border: '1px solid black', padding: '3px 6px', textAlign: 'center' }}>Rate</th>
+                    <th style={{ border: '1px solid black', padding: '3px 6px', textAlign: 'center' }}>Amount</th>
+                  </>
+                )}
+              </tr>
+            </thead>
+            <tbody>
+              {taxSummaryList.map((ts: any, i: number) => (
+                <tr key={i}>
+                  <td style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'center' }}>{ts.hsnSac}</td>
+                  <td style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'right' }}>{formatIndianCurrency(ts.taxableValue).replace('₹', '')}</td>
                   {!isInterState ? (
                     <>
-                      <th className="border-r border-black p-1" colSpan={2}>Central Tax</th>
-                      <th className="border-r border-black p-1" colSpan={2}>State Tax</th>
-                    </>
-                  ) : (
-                    <th className="border-r border-black p-1" colSpan={2}>Integrated Tax</th>
-                  )}
-                  <th className="p-1" rowSpan={2}>Total Tax Amount</th>
-                </tr>
-                <tr>
-                  {!isInterState ? (
-                    <>
-                      <th className="border-r border-black border-t border-black p-1">Rate</th>
-                      <th className="border-r border-black border-t border-black p-1">Amount</th>
-                      <th className="border-r border-black border-t border-black p-1">Rate</th>
-                      <th className="border-r border-black border-t border-black p-1">Amount</th>
-                    </>
-                  ) : (
-                    <>
-                      <th className="border-r border-black border-t border-black p-1">Rate</th>
-                      <th className="border-r border-black border-t border-black p-1">Amount</th>
-                    </>
-                  )}
-                </tr>
-              </thead>
-              <tbody>
-                {taxSummaryList.map((ts: any, i: number) => (
-                  <tr key={i}>
-                    <td className="border-r border-black p-1 text-center">{ts.hsnSac}</td>
-                    <td className="border-r border-black p-1 text-right">{formatIndianCurrency(ts.taxableValue).replace('₹', '')}</td>
-                    {!isInterState ? (
-                      <>
-                        <td className="border-r border-black p-1 text-center">{ts.cgstPercent}%</td>
-                        <td className="border-r border-black p-1 text-right">{formatIndianCurrency(ts.cgstAmount).replace('₹', '')}</td>
-                        <td className="border-r border-black p-1 text-center">{ts.sgstPercent}%</td>
-                        <td className="border-r border-black p-1 text-right">{formatIndianCurrency(ts.sgstAmount).replace('₹', '')}</td>
-                      </>
-                    ) : (
-                      <>
-                        <td className="border-r border-black p-1 text-center">{ts.igstPercent}%</td>
-                        <td className="border-r border-black p-1 text-right">{formatIndianCurrency(ts.igstAmount).replace('₹', '')}</td>
-                      </>
-                    )}
-                    <td className="p-1 text-right font-medium">
-                      {formatIndianCurrency(ts.cgstAmount + ts.sgstAmount + ts.igstAmount).replace('₹', '')}
-                    </td>
-                  </tr>
-                ))}
-                <tr className="border-t border-black font-bold">
-                  <td className="border-r border-black p-1 text-right">Total</td>
-                  <td className="border-r border-black p-1 text-right">{formatIndianCurrency(invoice.taxable_value).replace('₹', '')}</td>
-                  {!isInterState ? (
-                    <>
-                      <td className="border-r border-black p-1"></td>
-                      <td className="border-r border-black p-1 text-right">{formatIndianCurrency(invoice.cgst_total).replace('₹', '')}</td>
-                      <td className="border-r border-black p-1"></td>
-                      <td className="border-r border-black p-1 text-right">{formatIndianCurrency(invoice.sgst_total).replace('₹', '')}</td>
+                      <td style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'center' }}>{ts.cgstPercent}%</td>
+                      <td style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'right' }}>{formatIndianCurrency(ts.cgstAmount).replace('₹', '')}</td>
+                      <td style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'center' }}>{ts.sgstPercent}%</td>
+                      <td style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'right' }}>{formatIndianCurrency(ts.sgstAmount).replace('₹', '')}</td>
                     </>
                   ) : (
                     <>
-                      <td className="border-r border-black p-1"></td>
-                      <td className="border-r border-black p-1 text-right">{formatIndianCurrency(invoice.igst_total).replace('₹', '')}</td>
+                      <td style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'center' }}>{ts.igstPercent}%</td>
+                      <td style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'right' }}>{formatIndianCurrency(ts.igstAmount).replace('₹', '')}</td>
                     </>
                   )}
-                  <td className="p-1 text-right">{formatIndianCurrency(invoice.cgst_total + invoice.sgst_total + invoice.igst_total).replace('₹', '')}</td>
+                  <td style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'right', fontWeight: 600 }}>
+                    {formatIndianCurrency(ts.cgstAmount + ts.sgstAmount + ts.igstAmount).replace('₹', '')}
+                  </td>
                 </tr>
-              </tbody>
-            </table>
-          </div>
+              ))}
+              <tr style={{ fontWeight: 700, borderTop: '2px solid black' }}>
+                <td style={{ border: '1px solid black', borderTop: '2px solid black', padding: '4px 6px', textAlign: 'right' }}>Total</td>
+                <td style={{ border: '1px solid black', borderTop: '2px solid black', padding: '4px 6px', textAlign: 'right' }}>{formatIndianCurrency(invoice.taxable_value).replace('₹', '')}</td>
+                {!isInterState ? (
+                  <>
+                    <td style={{ border: '1px solid black', borderTop: '2px solid black', padding: '4px 6px' }}></td>
+                    <td style={{ border: '1px solid black', borderTop: '2px solid black', padding: '4px 6px', textAlign: 'right' }}>{formatIndianCurrency(invoice.cgst_total).replace('₹', '')}</td>
+                    <td style={{ border: '1px solid black', borderTop: '2px solid black', padding: '4px 6px' }}></td>
+                    <td style={{ border: '1px solid black', borderTop: '2px solid black', padding: '4px 6px', textAlign: 'right' }}>{formatIndianCurrency(invoice.sgst_total).replace('₹', '')}</td>
+                  </>
+                ) : (
+                  <>
+                    <td style={{ border: '1px solid black', borderTop: '2px solid black', padding: '4px 6px' }}></td>
+                    <td style={{ border: '1px solid black', borderTop: '2px solid black', padding: '4px 6px', textAlign: 'right' }}>{formatIndianCurrency(invoice.igst_total).replace('₹', '')}</td>
+                  </>
+                )}
+                <td style={{ border: '1px solid black', borderTop: '2px solid black', padding: '4px 6px', textAlign: 'right' }}>{formatIndianCurrency(invoice.cgst_total + invoice.sgst_total + invoice.igst_total).replace('₹', '')}</td>
+              </tr>
+            </tbody>
+          </table>
 
           <div className="flex">
             {/* Left Bank details and QR */}

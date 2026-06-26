@@ -134,7 +134,7 @@ export default function InvoiceForm() {
       dispatched_through: "",
       destination: "",
       terms_of_delivery: "",
-      payment_mode: "Bank Transfer",
+      payment_mode: "Cash",
       status: "paid",
       email_to: "",
       is_inter_state: false,
@@ -151,6 +151,16 @@ export default function InvoiceForm() {
 
   const watchItems = form.watch("items");
   const watchIsInterState = form.watch("is_inter_state");
+  const watchBuyerStateCode = form.watch("buyer_state_code");
+
+  // Auto-detect inter-state whenever buyer state changes
+  useEffect(() => {
+    if (company?.state_code && watchBuyerStateCode) {
+      form.setValue("is_inter_state", company.state_code !== watchBuyerStateCode);
+    } else if (!watchBuyerStateCode) {
+      form.setValue("is_inter_state", false);
+    }
+  }, [watchBuyerStateCode, company?.state_code]);
 
   // Initial load
   useEffect(() => {
@@ -351,19 +361,22 @@ export default function InvoiceForm() {
                     </FormItem>
                   )} />
                 </div>
-                <FormField control={form.control} name="is_inter_state" render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 mt-4">
-                    <div className="space-y-0.5">
-                      <FormLabel>GST Mode</FormLabel>
-                      <div className="text-sm text-muted-foreground">
-                        {field.value ? "Inter-state (IGST)" : "Intra-state (CGST + SGST)"}
-                      </div>
-                    </div>
-                    <FormControl>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} />
-                    </FormControl>
-                  </FormItem>
-                )} />
+                {/* GST Mode — auto-detected, read-only */}
+                <div className={`flex items-center justify-between rounded-lg border p-3 mt-2 ${watchIsInterState ? 'bg-blue-50 border-blue-200' : 'bg-emerald-50 border-emerald-200'}`}>
+                  <div>
+                    <p className="text-sm font-medium">GST Mode (Auto)</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {watchIsInterState
+                        ? "Different states detected"
+                        : company?.state_code && watchBuyerStateCode
+                          ? "Same state — intra-state"
+                          : "Select buyer state to auto-detect"}
+                    </p>
+                  </div>
+                  <span className={`text-xs font-bold px-3 py-1 rounded-full ${watchIsInterState ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                    {watchIsInterState ? "IGST" : "CGST + SGST"}
+                  </span>
+                </div>
               </CardContent>
             </Card>
 
