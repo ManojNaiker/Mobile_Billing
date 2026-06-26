@@ -155,10 +155,19 @@ export default function InvoiceForm() {
 
   // Auto-detect inter-state whenever buyer state changes
   useEffect(() => {
-    if (company?.state_code && watchBuyerStateCode) {
+    if (!watchBuyerStateCode) return; // no buyer state yet, keep current value
+
+    if (company?.state_code) {
+      // Company state is set — fully automatic comparison
       form.setValue("is_inter_state", company.state_code !== watchBuyerStateCode);
-    } else if (!watchBuyerStateCode) {
-      form.setValue("is_inter_state", false);
+    } else {
+      // Company state not set — try GSTIN prefix comparison as fallback
+      const companyGstin = company?.gstin || "";
+      const buyerGstin = form.getValues("buyer_gstin") || "";
+      if (companyGstin.length >= 2 && buyerGstin.length >= 2) {
+        form.setValue("is_inter_state", companyGstin.slice(0, 2) !== buyerGstin.slice(0, 2));
+      }
+      // else: leave as-is so user's manual choice is preserved
     }
   }, [watchBuyerStateCode, company?.state_code]);
 
@@ -189,10 +198,14 @@ export default function InvoiceForm() {
       form.setValue("buyer_phone", cust.phone || "");
       form.setValue("buyer_state_name", cust.state_name || "");
       form.setValue("buyer_state_code", cust.state_code || "");
-      
-      // Auto set inter-state
+
+      // Auto detect inter-state: compare state codes if available, else compare GSTIN prefixes
       if (company?.state_code && cust.state_code) {
         form.setValue("is_inter_state", company.state_code !== cust.state_code);
+      } else if (company?.gstin && cust.gstin && company.gstin.length >= 2 && cust.gstin.length >= 2) {
+        form.setValue("is_inter_state", company.gstin.slice(0, 2) !== cust.gstin.slice(0, 2));
+      } else if (company?.state_code && cust.state_code === "") {
+        form.setValue("is_inter_state", false);
       }
     }
   };
@@ -361,21 +374,35 @@ export default function InvoiceForm() {
                     </FormItem>
                   )} />
                 </div>
-                {/* GST Mode — auto-detected, read-only */}
-                <div className={`flex items-center justify-between rounded-lg border p-3 mt-2 ${watchIsInterState ? 'bg-blue-50 border-blue-200' : 'bg-emerald-50 border-emerald-200'}`}>
-                  <div>
-                    <p className="text-sm font-medium">GST Mode (Auto)</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {watchIsInterState
-                        ? "Different states detected"
-                        : company?.state_code && watchBuyerStateCode
-                          ? "Same state — intra-state"
-                          : "Select buyer state to auto-detect"}
-                    </p>
+                {/* GST Mode — auto-detected from states, manual fallback */}
+                <div className={`rounded-lg border p-3 mt-2 ${watchIsInterState ? 'bg-blue-50 border-blue-200' : 'bg-emerald-50 border-emerald-200'}`}>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium">GST Mode</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {company?.state_code && watchBuyerStateCode
+                          ? watchIsInterState
+                            ? "Inter-state (different states)"
+                            : "Intra-state (same state)"
+                          : "Auto-detect by state • or switch manually →"}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-xs font-bold px-3 py-1 rounded-full ${watchIsInterState ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                        {watchIsInterState ? "IGST" : "CGST + SGST"}
+                      </span>
+                      {/* Manual override when company state is not configured */}
+                      {!company?.state_code && (
+                        <button
+                          type="button"
+                          onClick={() => form.setValue("is_inter_state", !watchIsInterState)}
+                          className="text-xs underline text-muted-foreground hover:text-foreground"
+                        >
+                          Switch
+                        </button>
+                      )}
+                    </div>
                   </div>
-                  <span className={`text-xs font-bold px-3 py-1 rounded-full ${watchIsInterState ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'}`}>
-                    {watchIsInterState ? "IGST" : "CGST + SGST"}
-                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -432,7 +459,17 @@ export default function InvoiceForm() {
                             form.setValue("buyer_state_code", code);
                             field.onChange(name);
                             if (company?.state_code) {
+                              // Company state set → compare state codes directly
                               form.setValue("is_inter_state", company.state_code !== code);
+                            } else if (company?.gstin && company.gstin.length >= 2) {
+                              // Fallback: compare first 2 chars of GSTINs
+                              const buyerGstin = form.getValues("buyer_gstin") || "";
+                              if (buyerGstin.length >= 2) {
+                                form.setValue("is_inter_state", company.gstin.slice(0, 2) !== buyerGstin.slice(0, 2));
+                              } else {
+                                // Use state code prefix: company GSTIN prefix vs selected state code
+                                form.setValue("is_inter_state", company.gstin.slice(0, 2) !== code);
+                              }
                             }
                           }}
                           placeholder="Type state name..."
