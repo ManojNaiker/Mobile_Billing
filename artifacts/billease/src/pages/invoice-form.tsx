@@ -6,7 +6,8 @@ import {
   useUpdateInvoice, 
   useListCustomers, 
   useListProducts,
-  useGetCompany
+  useGetCompany,
+  useSendInvoiceEmail,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLocation, useParams } from "wouter";
@@ -23,7 +24,8 @@ import { useToast } from "@/hooks/use-toast";
 import { calculateInvoiceItem, calculateInvoiceTotals } from "@/lib/invoice-utils";
 import { numberToWordsIndian, formatIndianCurrency } from "@/lib/indian-utils";
 import { StateCombobox } from "@/components/state-combobox";
-import { Trash2, Plus, Save, Eye } from "lucide-react";
+import { ItemDescriptionInput } from "@/components/item-description-input";
+import { Trash2, Plus, Save, Eye, Mail } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -51,6 +53,7 @@ const invoiceSchema = z.object({
   terms_of_delivery: z.string().optional().nullable(),
   payment_mode: z.string().min(1, "Payment mode is required"),
   status: z.string().min(1, "Status is required"),
+  email_to: z.string().optional(),
   is_inter_state: z.boolean(),
   items: z.array(z.object({
     description: z.string().min(1, "Description is required"),
@@ -107,6 +110,7 @@ export default function InvoiceForm() {
 
   const createInvoice = useCreateInvoice();
   const updateInvoice = useUpdateInvoice();
+  const sendEmail = useSendInvoiceEmail();
 
   const form = useForm<InvoiceFormValues>({
     resolver: zodResolver(invoiceSchema),
@@ -132,6 +136,7 @@ export default function InvoiceForm() {
       terms_of_delivery: "",
       payment_mode: "Bank Transfer",
       status: "paid",
+      email_to: "",
       is_inter_state: false,
       items: [{
         description: "", hsnSac: "", unit: "PCS", quantity: 1, rate: 0, discountPercent: 0, taxPercent: 18
@@ -231,26 +236,36 @@ export default function InvoiceForm() {
     };
     
     // remove purely frontend fields
+    const emailTo = data.email_to?.trim();
     const payload = { ...finalData };
     delete (payload as any).is_inter_state;
+    delete (payload as any).email_to;
+
+    const afterSave = (invoiceId: number) => {
+      queryClient.invalidateQueries({ queryKey: ['invoices'] });
+      if (emailTo) {
+        sendEmail.mutate({ id: invoiceId, data: { to_email: emailTo } }, {
+          onSuccess: (r) => toast({ title: r.message || `Email sent to ${emailTo}` }),
+          onError: () => toast({ title: "Email send failed. Check SMTP settings.", variant: "destructive" }),
+        });
+      }
+      if (preview) setLocation(`/billing/${invoiceId}/preview`);
+      else setLocation("/history");
+    };
 
     if (isEdit) {
       updateInvoice.mutate({ id: Number(id), data: payload as any }, {
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ['invoices'] });
           toast({ title: "Invoice updated successfully" });
-          if (preview) setLocation(`/billing/${id}/preview`);
-          else setLocation("/history");
+          afterSave(Number(id));
         },
         onError: () => toast({ title: "Failed to update invoice", variant: "destructive" })
       });
     } else {
       createInvoice.mutate({ data: payload as any }, {
         onSuccess: (res) => {
-          queryClient.invalidateQueries({ queryKey: ['invoices'] });
           toast({ title: "Invoice created successfully" });
-          if (preview) setLocation(`/billing/${res.id}/preview`);
-          else setLocation("/history");
+          afterSave(res.id);
         },
         onError: () => toast({ title: "Failed to create invoice", variant: "destructive" })
       });
@@ -393,20 +408,54 @@ export default function InvoiceForm() {
                     </FormItem>
                   )} />
                 </div>
-                <FormField control={form.control} name="buyer_state_code" render={({ field }) => (
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="col-span-2">
+                    <FormField control={form.control} name="buyer_state_name" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs text-muted-foreground">State</FormLabel>
+                        <StateCombobox
+                          value={form.watch("buyer_state_code") || ""}
+                          onSelect={(code, name) => {
+                            form.setValue("buyer_state_code", code);
+                            field.onChange(name);
+                            if (company?.state_code) {
+                              form.setValue("is_inter_state", company.state_code !== code);
+                            }
+                          }}
+                          placeholder="Type state name..."
+                        />
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  </div>
+                  <FormField control={form.control} name="buyer_state_code" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs text-muted-foreground">State Code</FormLabel>
+                      <FormControl>
+                        <Input
+                          readOnly
+                          className="bg-muted text-center font-mono text-sm"
+                          placeholder="--"
+                          {...field}
+                          value={field.value || ""}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )} />
+                </div>
+                <FormField control={form.control} name="email_to" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs text-muted-foreground">State</FormLabel>
-                    <StateCombobox
-                      value={field.value || ""}
-                      onSelect={(code, name) => {
-                        field.onChange(code);
-                        form.setValue("buyer_state_name", name);
-                        if (company?.state_code) {
-                          form.setValue("is_inter_state", company.state_code !== code);
-                        }
-                      }}
-                      placeholder="Type state name..."
-                    />
+                    <FormLabel className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Mail className="w-3 h-3" /> Send Invoice Email (optional)
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="customer@example.com"
+                        {...field}
+                        value={field.value || ""}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
@@ -444,47 +493,41 @@ export default function InvoiceForm() {
                       return (
                         <TableRow key={field.id} className="group">
                           <TableCell className="p-2 align-top">
-                            <div className="flex gap-2">
-                              <Select onValueChange={(v) => handleProductSelect(index, v)}>
-                                <SelectTrigger className="w-8 h-9 px-0 justify-center"><ChevronDown className="h-4 w-4" /></SelectTrigger>
-                                <SelectContent>
-                                  {products?.map(p => <SelectItem key={p.id} value={p.id.toString()}>{p.name}</SelectItem>)}
-                                </SelectContent>
-                              </Select>
-                              <div className="flex-1 space-y-1">
-                                <FormField control={form.control} name={`items.${index}.description`} render={({ field }) => (
+                            <div className="space-y-1">
+                              <FormField control={form.control} name={`items.${index}.description`} render={({ field }) => (
+                                <FormItem className="space-y-0">
+                                  <FormControl>
+                                    <ItemDescriptionInput
+                                      value={field.value}
+                                      onChange={field.onChange}
+                                      products={products || []}
+                                      onProductSelect={(prod) => handleProductSelect(index, prod.id.toString())}
+                                      onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                          e.preventDefault();
+                                          toggleNotes(index);
+                                        }
+                                      }}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )} />
+                              {(expandedNotes.has(index) || watchItems[index]?.notes) && (
+                                <FormField control={form.control} name={`items.${index}.notes`} render={({ field }) => (
                                   <FormItem className="space-y-0">
                                     <FormControl>
-                                      <Input
-                                        className="h-9"
-                                        placeholder="Description"
+                                      <textarea
+                                        className="w-full text-xs px-2 py-1 rounded border border-input bg-background resize-none focus:outline-none focus:ring-1 focus:ring-ring leading-tight"
+                                        rows={2}
+                                        placeholder="IMEI / Serial / Extra details..."
                                         {...field}
-                                        onKeyDown={(e) => {
-                                          if (e.key === "Enter") {
-                                            e.preventDefault();
-                                            toggleNotes(index);
-                                          }
-                                        }}
+                                        value={field.value ?? ""}
                                       />
                                     </FormControl>
                                   </FormItem>
                                 )} />
-                                {(expandedNotes.has(index) || watchItems[index]?.notes) && (
-                                  <FormField control={form.control} name={`items.${index}.notes`} render={({ field }) => (
-                                    <FormItem className="space-y-0">
-                                      <FormControl>
-                                        <textarea
-                                          className="w-full text-xs px-2 py-1 rounded border border-input bg-background resize-none focus:outline-none focus:ring-1 focus:ring-ring leading-tight"
-                                          rows={2}
-                                          placeholder="IMEI / Serial / Extra details..."
-                                          {...field}
-                                          value={field.value ?? ""}
-                                        />
-                                      </FormControl>
-                                    </FormItem>
-                                  )} />
-                                )}
-                              </div>
+                              )}
                             </div>
                           </TableCell>
                           <TableCell className="p-2 align-top">

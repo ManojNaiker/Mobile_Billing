@@ -51,6 +51,8 @@ export interface CompanyInput {
   /** @nullable */
   smtp_user?: string | null;
   /** @nullable */
+  smtp_pass?: string | null;
+  /** @nullable */
   smtp_from_name?: string | null;
   /** @nullable */
   smtp_secure?: string | null;

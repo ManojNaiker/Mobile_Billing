@@ -26,6 +26,8 @@ import type {
   CustomerInput,
   DashboardSummary,
   DeleteResponse,
+  EmailInvoiceInput,
+  EmailResult,
   HealthStatus,
   Invoice,
   InvoiceInput,
@@ -1327,6 +1329,77 @@ export const useDeleteInvoice = <TError = ErrorType<unknown>,
         TContext
       > => {
       return useMutation(getDeleteInvoiceMutationOptions(options));
+    }
+
+export const getSendInvoiceEmailUrl = (id: number,) => {
+
+
+
+
+  return `/api/invoices/${id}/send-email`
+}
+
+/**
+ * @summary Send invoice via email using company SMTP settings
+ */
+export const sendInvoiceEmail = async (id: number,
+    emailInvoiceInput: EmailInvoiceInput, options?: RequestInit): Promise<EmailResult> => {
+
+  return customFetch<EmailResult>(getSendInvoiceEmailUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(emailInvoiceInput)
+  }
+);}
+
+
+
+
+export const getSendInvoiceEmailMutationOptions = <TError = ErrorType<EmailResult>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendInvoiceEmail>>, TError,{id: number;data: BodyType<EmailInvoiceInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof sendInvoiceEmail>>, TError,{id: number;data: BodyType<EmailInvoiceInput>}, TContext> => {
+
+const mutationKey = ['sendInvoiceEmail'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof sendInvoiceEmail>>, {id: number;data: BodyType<EmailInvoiceInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  sendInvoiceEmail(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SendInvoiceEmailMutationResult = NonNullable<Awaited<ReturnType<typeof sendInvoiceEmail>>>
+    export type SendInvoiceEmailMutationBody = BodyType<EmailInvoiceInput>
+    export type SendInvoiceEmailMutationError = ErrorType<EmailResult>
+
+    /**
+ * @summary Send invoice via email using company SMTP settings
+ */
+export const useSendInvoiceEmail = <TError = ErrorType<EmailResult>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendInvoiceEmail>>, TError,{id: number;data: BodyType<EmailInvoiceInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof sendInvoiceEmail>>,
+        TError,
+        {id: number;data: BodyType<EmailInvoiceInput>},
+        TContext
+      > => {
+      return useMutation(getSendInvoiceEmailMutationOptions(options));
     }
 
 export const getDuplicateInvoiceUrl = (id: number,) => {

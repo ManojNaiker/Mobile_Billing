@@ -12,6 +12,8 @@ export * from './customer';
 export * from './customerInput';
 export * from './dashboardSummary';
 export * from './deleteResponse';
+export * from './emailInvoiceInput';
+export * from './emailResult';
 export * from './healthStatus';
 export * from './invoice';
 export * from './invoiceInput';

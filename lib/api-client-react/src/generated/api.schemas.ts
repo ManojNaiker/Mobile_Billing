@@ -5,6 +5,16 @@
  * BillEase GST Invoice Generator API
  * OpenAPI spec version: 0.1.0
  */
+export interface EmailInvoiceInput {
+  to_email: string;
+}
+
+export interface EmailResult {
+  success?: boolean;
+  message?: string;
+  error?: string;
+}
+
 export interface HealthStatus {
   status: string;
 }
@@ -57,6 +67,8 @@ export interface Company {
   /** @nullable */
   smtp_user?: string | null;
   /** @nullable */
+  smtp_pass?: string | null;
+  /** @nullable */
   smtp_from_name?: string | null;
   /** @nullable */
   smtp_secure?: string | null;
@@ -108,6 +120,8 @@ export interface CompanyInput {
   smtp_port?: string | null;
   /** @nullable */
   smtp_user?: string | null;
+  /** @nullable */
+  smtp_pass?: string | null;
   /** @nullable */
   smtp_from_name?: string | null;
   /** @nullable */

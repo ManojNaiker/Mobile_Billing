@@ -168,6 +168,92 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+// POST /api/invoices/:id/send-email
+router.post("/:id/send-email", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const { to_email } = req.body as { to_email: string };
+
+    if (!to_email) {
+      return res.status(400).json({ success: false, error: "to_email is required" });
+    }
+
+    const [invoice] = await db.select().from(invoicesTable).where(eq(invoicesTable.id, id));
+    if (!invoice) return res.status(404).json({ success: false, error: "Invoice not found" });
+
+    const companyRows = await db.select().from(companyTable).limit(1);
+    const company = companyRows[0];
+
+    if (!company?.smtp_host || !company?.smtp_user || !company?.smtp_pass) {
+      return res.status(400).json({ success: false, error: "SMTP not configured. Please fill SMTP settings in Company Profile > Email Settings." });
+    }
+
+    const nodemailer = await import("nodemailer");
+    const transporter = nodemailer.default.createTransport({
+      host: company.smtp_host,
+      port: parseInt(company.smtp_port || "587"),
+      secure: company.smtp_secure === "true",
+      auth: {
+        user: company.smtp_user,
+        pass: company.smtp_pass,
+      },
+    });
+
+    const items = (invoice.items as any[]).map((item: any, i: number) =>
+      `<tr>
+        <td style="padding:6px 8px;border:1px solid #ddd">${i + 1}</td>
+        <td style="padding:6px 8px;border:1px solid #ddd">${item.description}</td>
+        <td style="padding:6px 8px;border:1px solid #ddd;text-align:center">${item.quantity}</td>
+        <td style="padding:6px 8px;border:1px solid #ddd;text-align:right">₹${Number(item.rate).toFixed(2)}</td>
+        <td style="padding:6px 8px;border:1px solid #ddd;text-align:right">₹${Number(item.total || item.amount || 0).toFixed(2)}</td>
+      </tr>`
+    ).join("");
+
+    const html = `
+      <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;color:#222">
+        <h2 style="color:#4f46e5">Invoice ${invoice.invoice_number}</h2>
+        <p>Dear ${invoice.buyer_name},</p>
+        <p>Please find your invoice details below.</p>
+        <table style="width:100%;border-collapse:collapse;margin:16px 0">
+          <thead>
+            <tr style="background:#f3f4f6">
+              <th style="padding:6px 8px;border:1px solid #ddd;text-align:left">#</th>
+              <th style="padding:6px 8px;border:1px solid #ddd;text-align:left">Description</th>
+              <th style="padding:6px 8px;border:1px solid #ddd">Qty</th>
+              <th style="padding:6px 8px;border:1px solid #ddd;text-align:right">Rate</th>
+              <th style="padding:6px 8px;border:1px solid #ddd;text-align:right">Amount</th>
+            </tr>
+          </thead>
+          <tbody>${items}</tbody>
+        </table>
+        <table style="margin-left:auto;border-collapse:collapse">
+          <tr><td style="padding:4px 12px">Subtotal</td><td style="padding:4px 12px;text-align:right">₹${Number(invoice.subtotal || 0).toFixed(2)}</td></tr>
+          ${invoice.cgst_total ? `<tr><td style="padding:4px 12px">CGST</td><td style="padding:4px 12px;text-align:right">₹${Number(invoice.cgst_total).toFixed(2)}</td></tr>` : ""}
+          ${invoice.sgst_total ? `<tr><td style="padding:4px 12px">SGST</td><td style="padding:4px 12px;text-align:right">₹${Number(invoice.sgst_total).toFixed(2)}</td></tr>` : ""}
+          ${invoice.igst_total ? `<tr><td style="padding:4px 12px">IGST</td><td style="padding:4px 12px;text-align:right">₹${Number(invoice.igst_total).toFixed(2)}</td></tr>` : ""}
+          <tr style="font-weight:bold;font-size:16px"><td style="padding:8px 12px;border-top:2px solid #4f46e5">Total</td><td style="padding:8px 12px;border-top:2px solid #4f46e5;text-align:right;color:#4f46e5">₹${Number(invoice.grand_total || 0).toFixed(2)}</td></tr>
+        </table>
+        <p style="margin-top:24px;color:#666;font-size:13px">
+          ${company.name}<br/>
+          ${company.phone ? `Phone: ${company.phone}<br/>` : ""}
+          ${company.email ? `Email: ${company.email}` : ""}
+        </p>
+      </div>`;
+
+    await transporter.sendMail({
+      from: `"${company.smtp_from_name || company.name}" <${company.smtp_user}>`,
+      to: to_email,
+      subject: `Invoice ${invoice.invoice_number} from ${company.name}`,
+      html,
+    });
+
+    return res.json({ success: true, message: `Invoice sent to ${to_email}` });
+  } catch (err) {
+    req.log.error({ err }, "Failed to send invoice email");
+    return res.status(500).json({ success: false, error: "Failed to send email. Check SMTP settings." });
+  }
+});
+
 // POST /api/invoices/:id/duplicate
 router.post("/:id/duplicate", async (req, res) => {
   try {

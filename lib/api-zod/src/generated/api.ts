@@ -45,6 +45,7 @@ export const GetCompanyResponse = zod.object({
   "smtp_host": zod.string().nullish(),
   "smtp_port": zod.string().nullish(),
   "smtp_user": zod.string().nullish(),
+  "smtp_pass": zod.string().nullish(),
   "smtp_from_name": zod.string().nullish(),
   "smtp_secure": zod.string().nullish(),
   "created_at": zod.string(),
@@ -79,6 +80,7 @@ export const UpdateCompanyBody = zod.object({
   "smtp_host": zod.string().nullish(),
   "smtp_port": zod.string().nullish(),
   "smtp_user": zod.string().nullish(),
+  "smtp_pass": zod.string().nullish(),
   "smtp_from_name": zod.string().nullish(),
   "smtp_secure": zod.string().nullish()
 })
@@ -109,6 +111,7 @@ export const UpdateCompanyResponse = zod.object({
   "smtp_host": zod.string().nullish(),
   "smtp_port": zod.string().nullish(),
   "smtp_user": zod.string().nullish(),
+  "smtp_pass": zod.string().nullish(),
   "smtp_from_name": zod.string().nullish(),
   "smtp_secure": zod.string().nullish(),
   "created_at": zod.string(),
@@ -657,6 +660,24 @@ export const DeleteInvoiceParams = zod.object({
 export const DeleteInvoiceResponse = zod.object({
   "success": zod.boolean(),
   "message": zod.string()
+})
+
+
+/**
+ * @summary Send invoice via email using company SMTP settings
+ */
+export const SendInvoiceEmailParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const SendInvoiceEmailBody = zod.object({
+  "to_email": zod.string()
+})
+
+export const SendInvoiceEmailResponse = zod.object({
+  "success": zod.boolean().optional(),
+  "message": zod.string().optional(),
+  "error": zod.string().optional()
 })
 
 

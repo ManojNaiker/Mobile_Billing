@@ -341,6 +341,37 @@ paths:
               schema:
                 $ref: "#/components/schemas/DeleteResponse"
 
+  /invoices/{id}/send-email:
+    post:
+      operationId: sendInvoiceEmail
+      tags: [invoices]
+      summary: Send invoice via email using company SMTP settings
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailInvoiceInput"
+      responses:
+        "200":
+          description: Email sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailResult"
+        "400":
+          description: Bad request (SMTP not configured or invalid)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailResult"
+
   /invoices/{id}/duplicate:
     post:
       operationId: duplicateInvoice
@@ -405,6 +436,24 @@ paths:
 
 components:
   schemas:
+    EmailInvoiceInput:
+      type: object
+      properties:
+        to_email:
+          type: string
+      required:
+        - to_email
+
+    EmailResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        error:
+          type: string
+
     HealthStatus:
       type: object
       properties:
