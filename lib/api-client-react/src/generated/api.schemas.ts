@@ -248,6 +248,7 @@ export interface Invoice {
   igst_total: number;
   grand_total: number;
   amount_in_words: string;
+  include_gst?: boolean;
   payment_mode: string;
   status: string;
   items: InvoiceItem[];
@@ -300,6 +301,7 @@ export interface InvoiceInput {
   igst_total: number;
   grand_total: number;
   amount_in_words: string;
+  include_gst?: boolean;
   payment_mode: string;
   status: string;
   items: InvoiceItem[];

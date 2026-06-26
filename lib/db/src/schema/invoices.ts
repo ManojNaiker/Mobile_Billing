@@ -1,4 +1,4 @@
-import { pgTable, serial, text, doublePrecision, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, doublePrecision, timestamp, jsonb, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -34,6 +34,7 @@ export const invoicesTable = pgTable("invoices", {
   amount_in_words: text("amount_in_words").notNull().default(""),
   payment_mode: text("payment_mode").notNull().default("cash"),
   status: text("status").notNull().default("draft"),
+  include_gst: boolean("include_gst").notNull().default(true),
   items: jsonb("items").notNull().default([]),
   created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
   updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),

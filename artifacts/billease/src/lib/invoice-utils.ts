@@ -3,7 +3,8 @@ export function calculateInvoiceItem(
   quantity: number,
   discountPercent: number,
   taxPercent: number,
-  isInterState: boolean
+  isInterState: boolean,
+  includeGst: boolean = true
 ) {
   const amount = rate * quantity;
   const taxableValue = amount * (1 - discountPercent / 100);
@@ -15,14 +16,16 @@ export function calculateInvoiceItem(
   let igstPercent = 0;
   let igstAmount = 0;
 
-  if (isInterState) {
-    igstPercent = taxPercent;
-    igstAmount = taxableValue * (taxPercent / 100);
-  } else {
-    cgstPercent = taxPercent / 2;
-    cgstAmount = taxableValue * (cgstPercent / 100);
-    sgstPercent = taxPercent / 2;
-    sgstAmount = taxableValue * (sgstPercent / 100);
+  if (includeGst) {
+    if (isInterState) {
+      igstPercent = taxPercent;
+      igstAmount = taxableValue * (taxPercent / 100);
+    } else {
+      cgstPercent = taxPercent / 2;
+      cgstAmount = taxableValue * (cgstPercent / 100);
+      sgstPercent = taxPercent / 2;
+      sgstAmount = taxableValue * (sgstPercent / 100);
+    }
   }
 
   const total = taxableValue + cgstAmount + sgstAmount + igstAmount;

@@ -20,6 +20,8 @@ export default function InvoicePreview() {
   const isInterState = company?.state_code && invoice?.buyer_state_code 
     ? company.state_code !== invoice.buyer_state_code 
     : false;
+  
+  const includeGst = invoice?.include_gst !== false;
 
   const handlePrint = () => {
     window.print();
@@ -113,7 +115,7 @@ export default function InvoicePreview() {
         <div className="relative z-10" style={{ border: '1px solid black' }}>
           {/* Header */}
           <div className="text-center font-bold text-xl border-b border-black py-2 tracking-widest">
-            TAX INVOICE
+            {includeGst ? "TAX INVOICE" : "INVOICE"}
           </div>
 
           <div className="flex border-b border-black">
@@ -236,8 +238,8 @@ export default function InvoicePreview() {
                   <td style={{ border: '1px solid black', padding: '4px 6px' }}></td>
                 </tr>
               ))}
-              {/* Sub Totals */}
-              {!isInterState ? (
+              {/* Sub Totals — only when GST is included */}
+              {includeGst && (!isInterState ? (
                 <>
                   <tr style={{ fontWeight: 600, borderTop: '1px solid black' }}>
                     <td colSpan={7} style={{ border: '1px solid black', padding: '4px 8px', textAlign: 'right' }}>CGST</td>
@@ -253,7 +255,7 @@ export default function InvoicePreview() {
                   <td colSpan={7} style={{ border: '1px solid black', padding: '4px 8px', textAlign: 'right' }}>IGST</td>
                   <td style={{ border: '1px solid black', padding: '4px 8px', textAlign: 'right' }}>{formatIndianCurrency(invoice.igst_total).replace('₹', '')}</td>
                 </tr>
-              )}
+              ))}
               {/* Grand Total */}
               <tr style={{ fontWeight: 700, borderTop: '2px solid black' }}>
                 <td colSpan={7} style={{ border: '1px solid black', borderTop: '2px solid black', padding: '4px 8px', textAlign: 'right' }}>Total</td>
@@ -268,7 +270,8 @@ export default function InvoicePreview() {
             <span className="font-bold">{invoice.amount_in_words}</span>
           </div>
 
-          {/* Tax Summary Table */}
+          {/* Tax Summary Table — only for GST invoices */}
+          {includeGst && (
           <table className="w-full text-xs" style={{ borderCollapse: 'collapse', borderTop: '1px solid black', borderBottom: '1px solid black' }}>
             <thead>
               <tr>
@@ -338,6 +341,7 @@ export default function InvoicePreview() {
               </tr>
             </tbody>
           </table>
+          )}
 
           <div className="flex">
             {/* Left Bank details and QR */}

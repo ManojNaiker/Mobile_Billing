@@ -55,6 +55,7 @@ const invoiceSchema = z.object({
   status: z.string().min(1, "Status is required"),
   email_to: z.string().optional(),
   is_inter_state: z.boolean(),
+  include_gst: z.boolean(),
   items: z.array(z.object({
     description: z.string().min(1, "Description is required"),
     notes: z.string().optional(),
@@ -138,6 +139,7 @@ export default function InvoiceForm() {
       status: "paid",
       email_to: "",
       is_inter_state: false,
+      include_gst: true,
       items: [{
         description: "", hsnSac: "", unit: "PCS", quantity: 1, rate: 0, discountPercent: 0, taxPercent: 18
       }]
@@ -151,6 +153,7 @@ export default function InvoiceForm() {
 
   const watchItems = form.watch("items");
   const watchIsInterState = form.watch("is_inter_state");
+  const watchIncludeGst = form.watch("include_gst");
   const watchBuyerStateCode = form.watch("buyer_state_code");
 
   // Auto-detect inter-state whenever buyer state changes
@@ -182,6 +185,7 @@ export default function InvoiceForm() {
         order_date: invoice.order_date ? new Date(invoice.order_date).toISOString().split('T')[0] : "",
         delivery_note_date: invoice.delivery_note_date ? new Date(invoice.delivery_note_date).toISOString().split('T')[0] : "",
         is_inter_state: isInter || false,
+        include_gst: invoice.include_gst !== false,
         items: invoice.items as any,
       });
     } else if (!isEdit && nextInv && company) {
@@ -227,7 +231,8 @@ export default function InvoiceForm() {
       item.quantity || 1,
       item.discountPercent || 0,
       item.taxPercent || 0,
-      watchIsInterState
+      watchIsInterState,
+      watchIncludeGst
     );
     return { ...item, ...calc };
   }));
@@ -240,7 +245,8 @@ export default function InvoiceForm() {
         item.quantity,
         item.discountPercent,
         item.taxPercent,
-        data.is_inter_state
+        data.is_inter_state,
+        data.include_gst
       );
       return { ...item, ...calc };
     });
@@ -255,6 +261,7 @@ export default function InvoiceForm() {
       igst_total: totals.igst_total,
       grand_total: totals.grand_total,
       amount_in_words: numberToWordsIndian(totals.grand_total),
+      include_gst: data.include_gst,
       items: processedItems,
     };
     
@@ -374,7 +381,23 @@ export default function InvoiceForm() {
                     </FormItem>
                   )} />
                 </div>
+                {/* GST Toggle */}
+                <FormField control={form.control} name="include_gst" render={({ field }) => (
+                  <FormItem>
+                    <div className={`rounded-lg border p-3 flex items-center justify-between ${field.value ? 'bg-amber-50 border-amber-200' : 'bg-gray-50 border-gray-200'}`}>
+                      <div>
+                        <div className="font-medium text-sm">{field.value ? 'GST Invoice (Tax Included)' : 'Non-GST Invoice (No Tax)'}</div>
+                        <div className="text-xs text-muted-foreground">{field.value ? 'CGST/SGST/IGST will be applied on items' : 'Invoice without any tax — simple bill'}</div>
+                      </div>
+                      <FormControl>
+                        <Switch checked={field.value} onCheckedChange={field.onChange} />
+                      </FormControl>
+                    </div>
+                  </FormItem>
+                )} />
+
                 {/* GST Mode — auto-detected from states, manual fallback */}
+                {watchIncludeGst && (
                 <div className={`rounded-lg border p-3 mt-2 ${watchIsInterState ? 'bg-blue-50 border-blue-200' : 'bg-emerald-50 border-emerald-200'}`}>
                   <div className="flex items-center justify-between">
                     <div>
@@ -404,6 +427,7 @@ export default function InvoiceForm() {
                     </div>
                   </div>
                 </div>
+                )}
               </CardContent>
             </Card>
 
@@ -528,7 +552,7 @@ export default function InvoiceForm() {
                       <TableHead className="w-[10%] text-right">Qty</TableHead>
                       <TableHead className="w-[15%] text-right">Rate</TableHead>
                       <TableHead className="w-[10%] text-right">Disc %</TableHead>
-                      <TableHead className="w-[10%] text-right">Tax %</TableHead>
+                      {watchIncludeGst && <TableHead className="w-[10%] text-right">Tax %</TableHead>}
                       <TableHead className="w-[10%] text-right">Amount</TableHead>
                       <TableHead className="w-[5%]"></TableHead>
                     </TableRow>
@@ -537,7 +561,7 @@ export default function InvoiceForm() {
                     {fields.map((field, index) => {
                       const item = watchItems[index];
                       const calc = calculateInvoiceItem(
-                        item.rate || 0, item.quantity || 1, item.discountPercent || 0, item.taxPercent || 0, watchIsInterState
+                        item.rate || 0, item.quantity || 1, item.discountPercent || 0, item.taxPercent || 0, watchIsInterState, watchIncludeGst
                       );
                       
                       return (
@@ -600,6 +624,7 @@ export default function InvoiceForm() {
                               <FormItem className="space-y-0"><FormControl><Input className="h-9 text-right" type="number" step="0.1" {...field} /></FormControl></FormItem>
                             )} />
                           </TableCell>
+                          {watchIncludeGst && (
                           <TableCell className="p-2 align-top">
                             <FormField control={form.control} name={`items.${index}.taxPercent`} render={({ field }) => (
                               <FormItem className="space-y-0">
@@ -614,6 +639,7 @@ export default function InvoiceForm() {
                               </FormItem>
                             )} />
                           </TableCell>
+                          )}
                           <TableCell className="p-2 align-middle text-right font-medium">
                             {formatIndianCurrency(calc.total)}
                           </TableCell>
@@ -648,10 +674,10 @@ export default function InvoiceForm() {
                 <span>-{formatIndianCurrency(totals.discount_amount)}</span>
               </div>
               <div className="flex justify-between border-t pt-2 mt-2">
-                <span className="font-medium">Taxable Value:</span>
+                <span className="font-medium">{watchIncludeGst ? 'Taxable Value:' : 'Net Amount:'}</span>
                 <span className="font-medium">{formatIndianCurrency(totals.taxable_value)}</span>
               </div>
-              {!watchIsInterState ? (
+              {watchIncludeGst && (!watchIsInterState ? (
                 <>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">CGST:</span>
@@ -667,7 +693,7 @@ export default function InvoiceForm() {
                   <span className="text-muted-foreground">IGST:</span>
                   <span>{formatIndianCurrency(totals.igst_total)}</span>
                 </div>
-              )}
+              ))}
               <div className="flex justify-between border-t pt-2 mt-2 text-lg font-bold text-primary">
                 <span>Total:</span>
                 <span>{formatIndianCurrency(totals.grand_total)}</span>
