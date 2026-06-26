@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Printer, Edit2, ArrowLeft } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { QRCodeSVG } from "qrcode.react";
+import { InvoicePreviewFormat2 } from "./invoice-preview-format2";
 
 export default function InvoicePreview() {
   const { id } = useParams();
@@ -32,6 +33,8 @@ export default function InvoicePreview() {
   }
 
   if (!invoice || !company) return <div className="p-8 text-center">Invoice not found.</div>;
+
+  const invoiceFormat = company.invoice_format || 'format1';
 
   // Group tax summary by HSN/Tax %
   const taxSummary = invoice.items.reduce((acc: any, item: any) => {
@@ -76,19 +79,38 @@ export default function InvoicePreview() {
     invoice.buyer_gstin ? `GSTIN: ${invoice.buyer_gstin}` : null,
   ].filter(Boolean).join("\n");
 
+  const navBar = (
+    <div className="flex justify-between items-center no-print">
+      <Link href="/history">
+        <Button variant="outline"><ArrowLeft className="w-4 h-4 mr-2" /> Back</Button>
+      </Link>
+      <div className="flex gap-2">
+        <Link href={`/billing/${invoice.id}/edit`}>
+          <Button variant="secondary"><Edit2 className="w-4 h-4 mr-2" /> Edit</Button>
+        </Link>
+        <Button onClick={handlePrint}><Printer className="w-4 h-4 mr-2" /> Print Invoice</Button>
+      </div>
+    </div>
+  );
+
+  if (invoiceFormat === 'format2') {
+    return (
+      <div className="max-w-[210mm] mx-auto space-y-6 pb-20 animate-in fade-in duration-500">
+        {navBar}
+        <InvoicePreviewFormat2
+          invoice={invoice}
+          company={company}
+          isInterState={isInterState}
+          includeGst={includeGst}
+          qrData={qrData}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-[210mm] mx-auto space-y-6 pb-20 animate-in fade-in duration-500">
-      <div className="flex justify-between items-center no-print">
-        <Link href="/history">
-          <Button variant="outline"><ArrowLeft className="w-4 h-4 mr-2" /> Back</Button>
-        </Link>
-        <div className="flex gap-2">
-          <Link href={`/billing/${invoice.id}/edit`}>
-            <Button variant="secondary"><Edit2 className="w-4 h-4 mr-2" /> Edit</Button>
-          </Link>
-          <Button onClick={handlePrint}><Printer className="w-4 h-4 mr-2" /> Print Invoice</Button>
-        </div>
-      </div>
+      {navBar}
 
       <div className="bg-white text-black print:m-0 print:shadow-none shadow-md overflow-hidden relative" style={{ minHeight: '297mm', padding: '10mm', fontFamily: 'var(--font-serif)' }}>
         {/* Watermark */}

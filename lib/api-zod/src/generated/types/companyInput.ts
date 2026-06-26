@@ -35,6 +35,8 @@ export interface CompanyInput {
   /** @nullable */
   invoice_prefix?: string | null;
   /** @nullable */
+  invoice_format?: string | null;
+  /** @nullable */
   watermark_text?: string | null;
   /** @nullable */
   watermark_font?: string | null;

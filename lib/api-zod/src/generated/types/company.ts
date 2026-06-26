@@ -38,6 +38,8 @@ export interface Company {
   /** @nullable */
   invoice_counter?: number | null;
   /** @nullable */
+  invoice_format?: string | null;
+  /** @nullable */
   watermark_text?: string | null;
   /** @nullable */
   watermark_font?: string | null;

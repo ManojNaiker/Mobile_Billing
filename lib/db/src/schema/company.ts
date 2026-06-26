@@ -20,6 +20,7 @@ export const companyTable = pgTable("company", {
   authorized_signatory: text("authorized_signatory"),
   invoice_prefix: text("invoice_prefix"),
   invoice_counter: integer("invoice_counter").default(1),
+  invoice_format: text("invoice_format").default("format1"),
   watermark_text: text("watermark_text"),
   watermark_font: text("watermark_font"),
   watermark_opacity: text("watermark_opacity"),

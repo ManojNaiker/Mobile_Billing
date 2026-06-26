@@ -499,6 +499,8 @@ components:
           type: ["string", "null"]
         invoice_counter:
           type: ["integer", "null"]
+        invoice_format:
+          type: ["string", "null"]
         watermark_text:
           type: ["string", "null"]
         watermark_font:
@@ -565,6 +567,8 @@ components:
         authorized_signatory:
           type: ["string", "null"]
         invoice_prefix:
+          type: ["string", "null"]
+        invoice_format:
           type: ["string", "null"]
         watermark_text:
           type: ["string", "null"]
