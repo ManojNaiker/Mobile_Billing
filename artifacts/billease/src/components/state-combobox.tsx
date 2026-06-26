@@ -16,8 +16,10 @@ export function StateCombobox({ value, onSelect, placeholder = "Type state name.
   const selectedState = INDIAN_STATES.find(s => s.code === value);
   const [query, setQuery] = useState(selectedState?.name ?? "");
   const [open, setOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
   const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
   const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const state = INDIAN_STATES.find(s => s.code === value);
@@ -46,6 +48,7 @@ export function StateCombobox({ value, onSelect, placeholder = "Type state name.
 
   const handleFocus = () => {
     updateDropdownPosition();
+    setActiveIndex(-1);
     setOpen(true);
   };
 
@@ -54,6 +57,7 @@ export function StateCombobox({ value, onSelect, placeholder = "Type state name.
       setOpen(false);
       const state = INDIAN_STATES.find(s => s.code === value);
       setQuery(state?.name ?? "");
+      setActiveIndex(-1);
     }, 150);
   };
 
@@ -61,7 +65,42 @@ export function StateCombobox({ value, onSelect, placeholder = "Type state name.
     onSelect(code, name);
     setQuery(name);
     setOpen(false);
+    setActiveIndex(-1);
   };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!open) {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        updateDropdownPosition();
+        setOpen(true);
+        setActiveIndex(0);
+        e.preventDefault();
+      }
+      return;
+    }
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex(i => Math.min(i + 1, filtered.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex(i => Math.max(i - 1, 0));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (activeIndex >= 0 && filtered[activeIndex]) {
+        handleSelect(filtered[activeIndex].code, filtered[activeIndex].name);
+      }
+    } else if (e.key === "Escape") {
+      setOpen(false);
+      setActiveIndex(-1);
+    }
+  };
+
+  useEffect(() => {
+    if (activeIndex >= 0 && listRef.current) {
+      const item = listRef.current.children[activeIndex] as HTMLElement;
+      item?.scrollIntoView({ block: "nearest" });
+    }
+  }, [activeIndex]);
 
   useEffect(() => {
     if (!open) return;
@@ -79,33 +118,36 @@ export function StateCombobox({ value, onSelect, placeholder = "Type state name.
           className="pl-8"
           placeholder={placeholder}
           value={query}
-          onChange={(e) => { setQuery(e.target.value); updateDropdownPosition(); setOpen(true); }}
+          onChange={(e) => { setQuery(e.target.value); updateDropdownPosition(); setOpen(true); setActiveIndex(-1); }}
           onFocus={handleFocus}
           onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
           autoComplete="off"
         />
       </div>
 
       {open && filtered.length > 0 && createPortal(
         <div
+          ref={listRef}
           style={dropdownStyle}
           className="bg-popover border border-border rounded-md shadow-lg max-h-52 overflow-y-auto"
         >
-          {filtered.map((state) => (
+          {filtered.map((state, i) => (
             <button
               key={state.code}
               type="button"
               className={cn(
-                "w-full text-left px-3 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground cursor-pointer flex justify-between items-center gap-2",
-                state.code === value && "bg-accent/50 font-semibold"
+                "w-full text-left px-3 py-1.5 text-sm cursor-pointer",
+                i === activeIndex ? "bg-accent text-accent-foreground" : "hover:bg-accent hover:text-accent-foreground",
+                state.code === value && i !== activeIndex && "font-semibold"
               )}
               onMouseDown={(e) => {
                 e.preventDefault();
                 handleSelect(state.code, state.name);
               }}
+              onMouseEnter={() => setActiveIndex(i)}
             >
-              <span>{state.name}</span>
-              <span className="text-xs text-muted-foreground font-mono shrink-0">{state.code}</span>
+              {state.name}
             </button>
           ))}
         </div>,

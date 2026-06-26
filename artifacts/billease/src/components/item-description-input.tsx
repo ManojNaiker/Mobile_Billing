@@ -32,8 +32,10 @@ export function ItemDescriptionInput({
   className,
 }: ItemDescriptionInputProps) {
   const [open, setOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
   const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
   const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
   const filtered = value.trim().length === 0
     ? products
@@ -54,23 +56,59 @@ export function ItemDescriptionInput({
 
   const handleFocus = () => {
     updateDropdownPosition();
+    setActiveIndex(-1);
     setOpen(true);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(e.target.value);
     updateDropdownPosition();
+    setActiveIndex(-1);
     setOpen(true);
   };
 
   const handleBlur = () => {
-    setTimeout(() => setOpen(false), 150);
+    setTimeout(() => { setOpen(false); setActiveIndex(-1); }, 150);
   };
 
   const handleSelect = (product: Product) => {
     onProductSelect(product);
     setOpen(false);
+    setActiveIndex(-1);
   };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (open && filtered.length > 0) {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setActiveIndex(i => Math.min(i + 1, filtered.length - 1));
+        return;
+      }
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setActiveIndex(i => Math.max(i - 1, 0));
+        return;
+      }
+      if (e.key === "Enter" && activeIndex >= 0) {
+        e.preventDefault();
+        handleSelect(filtered[activeIndex]);
+        return;
+      }
+      if (e.key === "Escape") {
+        setOpen(false);
+        setActiveIndex(-1);
+        return;
+      }
+    }
+    onKeyDown?.(e);
+  };
+
+  useEffect(() => {
+    if (activeIndex >= 0 && listRef.current) {
+      const item = listRef.current.children[activeIndex] as HTMLElement;
+      item?.scrollIntoView({ block: "nearest" });
+    }
+  }, [activeIndex]);
 
   useEffect(() => {
     if (!open) return;
@@ -89,23 +127,28 @@ export function ItemDescriptionInput({
         onChange={handleChange}
         onFocus={handleFocus}
         onBlur={handleBlur}
-        onKeyDown={onKeyDown}
+        onKeyDown={handleKeyDown}
         autoComplete="off"
       />
       {open && filtered.length > 0 && createPortal(
         <div
+          ref={listRef}
           style={dropdownStyle}
           className="bg-popover border border-border rounded-md shadow-lg max-h-48 overflow-y-auto"
         >
-          {filtered.map((p) => (
+          {filtered.map((p, i) => (
             <button
               key={p.id}
               type="button"
-              className="w-full text-left px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground cursor-pointer flex justify-between items-center gap-2"
+              className={cn(
+                "w-full text-left px-3 py-2 text-sm cursor-pointer flex justify-between items-center gap-2",
+                i === activeIndex ? "bg-accent text-accent-foreground" : "hover:bg-accent hover:text-accent-foreground"
+              )}
               onMouseDown={(e) => {
                 e.preventDefault();
                 handleSelect(p);
               }}
+              onMouseEnter={() => setActiveIndex(i)}
             >
               <span className="truncate">{p.name}</span>
               <span className="text-xs text-muted-foreground shrink-0">₹{p.rate}</span>
