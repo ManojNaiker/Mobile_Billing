@@ -40,13 +40,13 @@ waitForPort = 8080
 name = "Start application"
 author = "agent"
 
-[workflows.workflow.metadata]
-outputType = "webview"
-
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "pnpm --filter @workspace/billease run dev"
 waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
 
 [agent]
 stack = "BEST_EFFORT_FALLBACK"
@@ -71,3 +71,7 @@ LOG_LEVEL = "info"
 [[ports]]
 localPort = 8080
 externalPort = 8080
+
+[[ports]]
+localPort = 5000
+externalPort = 80
