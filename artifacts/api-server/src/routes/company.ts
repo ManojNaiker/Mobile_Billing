@@ -54,7 +54,7 @@ router.get("/", async (req, res) => {
 // PUT /api/company
 router.put("/", async (req, res) => {
   try {
-    const body = req.body;
+    const { id: _id, created_at: _ca, updated_at: _ua, ...body } = req.body;
     const existing = await db.select().from(companyTable).limit(1);
     if (existing.length === 0) {
       const [created] = await db
