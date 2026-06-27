@@ -97,6 +97,71 @@ export function detectBrand(description: string): BrandInfo | null {
   return null;
 }
 
+const ALL_DEALER_BRANDS: { label: string; bg: string; text: string }[] = [
+  { label: "⌘ Apple", bg: "#1d1d1f", text: "#fff" },
+  { label: "SAMSUNG", bg: "#1428A0", text: "#fff" },
+  { label: "OPPO", bg: "#1D6F42", text: "#fff" },
+  { label: "vivo", bg: "#415FFF", text: "#fff" },
+  { label: "Redmi", bg: "#FF6900", text: "#fff" },
+  { label: "moto", bg: "#003087", text: "#fff" },
+  { label: "NOKIA", bg: "#005AFF", text: "#fff" },
+  { label: "realme", bg: "#F5A623", text: "#fff" },
+  { label: "1+", bg: "#F5010C", text: "#fff" },
+  { label: "iQOO", bg: "#232323", text: "#fff" },
+  { label: "HONOR", bg: "#C0392B", text: "#fff" },
+  { label: "Pixel", bg: "#4285F4", text: "#fff" },
+];
+
+export function BrandDealerBanner() {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        gap: "4px",
+        alignItems: "center",
+        padding: "5px 8px",
+        background: "#f8f8f8",
+        borderTop: "1px solid #ddd",
+        borderBottom: "1px solid #ddd",
+        marginBottom: "6px",
+      }}
+    >
+      <span
+        style={{
+          fontSize: "9px",
+          fontWeight: 700,
+          color: "#555",
+          textTransform: "uppercase",
+          letterSpacing: "0.5px",
+          marginRight: "4px",
+          whiteSpace: "nowrap",
+        }}
+      >
+        We Deal In:
+      </span>
+      {ALL_DEALER_BRANDS.map((b) => (
+        <span
+          key={b.label}
+          style={{
+            display: "inline-block",
+            background: b.bg,
+            color: b.text,
+            fontSize: "8px",
+            fontWeight: 700,
+            padding: "2px 5px",
+            borderRadius: "3px",
+            letterSpacing: "0.3px",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {b.label}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 interface BrandBadgeProps {
   description: string;
   size?: "sm" | "md";

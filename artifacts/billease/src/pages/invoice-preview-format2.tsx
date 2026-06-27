@@ -1,7 +1,7 @@
 import React from "react";
 import { formatIndianCurrency } from "@/lib/indian-utils";
 import { QRCodeSVG } from "qrcode.react";
-import { BrandBadgeInline } from "@/lib/brand-icons";
+import { BrandBadgeInline, BrandDealerBanner } from "@/lib/brand-icons";
 
 interface Format2Props {
   invoice: any;
@@ -137,6 +137,11 @@ export function InvoicePreviewFormat2({ invoice, company, isInterState, includeG
             </tr>
           </tbody>
         </table>
+
+        {/* Brand Banner */}
+        <div style={{ border: '1px solid #1a56db', borderTop: 'none', borderBottom: 'none' }}>
+          <BrandDealerBanner />
+        </div>
 
         {/* Items Table */}
         <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #1a56db', marginTop: '0', borderTop: 'none' }}>

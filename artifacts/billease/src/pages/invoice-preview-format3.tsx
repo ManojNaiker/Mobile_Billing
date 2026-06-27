@@ -1,7 +1,7 @@
 import React from "react";
 import { formatIndianCurrency } from "@/lib/indian-utils";
 import { QRCodeSVG } from "qrcode.react";
-import { BrandBadgeInline } from "@/lib/brand-icons";
+import { BrandBadgeInline, BrandDealerBanner } from "@/lib/brand-icons";
 
 interface Format3Props {
   invoice: any;
@@ -91,6 +91,9 @@ export function InvoicePreviewFormat3({ invoice, company, isInterState, includeG
             {invoice.buyer_state_name && <div style={{ fontSize: '11px', color: '#444' }}>{invoice.buyer_state_name}{invoice.buyer_state_code ? ` (${invoice.buyer_state_code})` : ''}</div>}
           </div>
         </div>
+
+        {/* Brand Banner */}
+        <BrandDealerBanner />
 
         {/* Items Table */}
         <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '0' }}>
@@ -255,7 +258,7 @@ export function InvoicePreviewFormat3({ invoice, company, isInterState, includeG
         </div>
 
         {company.email && (
-          <div style={{ textAlign: 'center', fontSize: '10px', color: '#888', marginTop: '10px', fontStyle: 'italic' }}>
+          <div style={{ textAlign: 'center', fontSize: '10px', color: '#888', marginTop: '6px', fontStyle: 'italic' }}>
             {company.email}
           </div>
         )}

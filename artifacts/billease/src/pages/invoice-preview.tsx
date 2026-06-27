@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { QRCodeSVG } from "qrcode.react";
 import { InvoicePreviewFormat2 } from "./invoice-preview-format2";
 import { InvoicePreviewFormat3 } from "./invoice-preview-format3";
-import { BrandBadge } from "@/lib/brand-icons";
+import { BrandBadge, BrandDealerBanner } from "@/lib/brand-icons";
 
 export default function InvoicePreview() {
   const { id } = useParams();
@@ -237,6 +237,11 @@ export default function InvoicePreview() {
                 <div className="text-sm mt-2"><span className="font-semibold">E-Way Bill No:</span> {invoice.e_way_bill_number}</div>
               )}
             </div>
+          </div>
+
+          {/* Brand Banner */}
+          <div style={{ borderBottom: '1px solid black' }}>
+            <BrandDealerBanner />
           </div>
 
           {/* Items Table */}
