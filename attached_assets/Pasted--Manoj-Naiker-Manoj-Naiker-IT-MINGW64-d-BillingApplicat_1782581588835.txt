@@ -1,0 +1,40 @@
+
+Manoj Naiker@Manoj_Naiker_IT MINGW64 /d/BillingApplication/Manoj (main)
+$ pnpm --filter @workspace/db run push
+Scope: all 9 workspace projects
+✓ Lockfile passes supply-chain policies (489 entries in 48.8s)
+Lockfile is up to date, resolution step is skipped
+Packages: +47 -34
++++++++++++++++++++++++++++++++++++++++++++++++----------------------------------
+[WARN] Tarball download average speed 44 KiB/s (size 47 KiB) is below 50 KiB/s: https://registry.npmjs.org/@scalar/json-magic/-/json-magic-0.12.16.tgz (GET)
+[WARN] Tarball download average speed 46 KiB/s (size 89 KiB) is below 50 KiB/s: https://registry.npmjs.org/@tanstack/react-query/-/react-query-5.101.0.tgz (GET)
+[WARN] Tarball download average speed 33 KiB/s (size 51 KiB) is below 50 KiB/s: https://registry.npmjs.org/@orval/angular/-/angular-8.18.0.tgz (GET)
+[WARN] Tarball download average speed 38 KiB/s (size 68 KiB) is below 50 KiB/s: https://registry.npmjs.org/@orval/query/-/query-8.18.0.tgz (GET)
+[WARN] Tarball download average speed 39 KiB/s (size 108 KiB) is below 50 KiB/s: https://registry.npmjs.org/@scalar/openapi-parser/-/openapi-parser-0.28.7.tgz (GET)
+[WARN] 15 other warnings
+Progress: resolved 47, reused 16, downloaded 31, added 40, done
+
+devDependencies:
+- prettier 3.8.5
++ prettier 3.8.4
+
+. preinstall$ sh -c 'rm -f package-lock.json yarn.lock; case "$npm_config_user_agent" in pnpm/*) ;; *) echo "Use pnpm instead" >&2; exit 1 ;; esac'
+└─ Done in 153ms
+[ERR_PNPM_IGNORED_BUILDS] Ignored build scripts: esbuild@0.27.3
+
+Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.
+[ERROR] Command failed with exit code 1: "C:\nodejs\node.exe" "C:\Users\Manoj Naiker\AppData\Roaming\npm\node_modules\pnpm\bin\pnpm.mjs" install
+
+pnpm: Command failed with exit code 1: "C:\nodejs\node.exe" "C:\Users\Manoj Naiker\AppData\Roaming\npm\node_modules\pnpm\bin\pnpm.mjs" install
+    at getFinalError (file:///C:/Users/Manoj%20Naiker/AppData/Roaming/npm/node_modules/pnpm/dist/pnpm.mjs:34291:14)
+    at makeError (file:///C:/Users/Manoj%20Naiker/AppData/Roaming/npm/node_modules/pnpm/dist/pnpm.mjs:36598:21)
+    at getSyncResult (file:///C:/Users/Manoj%20Naiker/AppData/Roaming/npm/node_modules/pnpm/dist/pnpm.mjs:38442:10)
+    at spawnSubprocessSync (file:///C:/Users/Manoj%20Naiker/AppData/Roaming/npm/node_modules/pnpm/dist/pnpm.mjs:38402:14)
+    at execaCoreSync (file:///C:/Users/Manoj%20Naiker/AppData/Roaming/npm/node_modules/pnpm/dist/pnpm.mjs:38332:23)
+    at callBoundExeca (file:///C:/Users/Manoj%20Naiker/AppData/Roaming/npm/node_modules/pnpm/dist/pnpm.mjs:40860:23)
+    at boundExeca (file:///C:/Users/Manoj%20Naiker/AppData/Roaming/npm/node_modules/pnpm/dist/pnpm.mjs:40837:49)
+    at sync (file:///C:/Users/Manoj%20Naiker/AppData/Roaming/npm/node_modules/pnpm/dist/pnpm.mjs:40996:10)
+    at runPnpmCli (file:///C:/Users/Manoj%20Naiker/AppData/Roaming/npm/node_modules/pnpm/dist/pnpm.mjs:247126:5)
+    at runDepsStatusCheck (file:///C:/Users/Manoj%20Naiker/AppData/Roaming/npm/node_modules/pnpm/dist/pnpm.mjs:248869:7)
+
+Manoj Naiker@Manoj_Naiker_IT MINGW64 /d/BillingApplication/Manoj (main)
