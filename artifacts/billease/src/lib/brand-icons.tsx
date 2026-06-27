@@ -1,4 +1,23 @@
 import React from "react";
+import {
+  siSamsung,
+  siApple,
+  siOppo,
+  siXiaomi,
+  siMotorola,
+  siNokia,
+  siOneplus,
+  siHuawei,
+  siHonor,
+  siGoogle,
+  siSony,
+  siLg,
+  siVivo,
+  siLenovo,
+  siAcer,
+  siAsus,
+  siHtc,
+} from "simple-icons";
 
 export interface BrandInfo {
   name: string;
@@ -7,176 +26,153 @@ export interface BrandInfo {
   label: string;
 }
 
-/* ── Inline SVG brand marks ─────────────────────────────────────────── */
-function AppleSvg() {
+/* ── Helper: render a simple-icons SVG path ─────────────────────────── */
+function SiIcon({ icon, size = 16, color = "#fff" }: { icon: { path: string; hex: string }; size?: number; color?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="white" width="16" height="16">
-      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+    <svg
+      role="img"
+      viewBox="0 0 24 24"
+      width={size}
+      height={size}
+      fill={color}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d={icon.path} />
     </svg>
   );
 }
 
-function SamsungSvg() {
+/* ── Fallback text mark for brands not in simple-icons ─────────────── */
+function TextMark({ label, color = "#fff", size = 11 }: { label: string; color?: string; size?: number }) {
   return (
-    <svg viewBox="0 0 60 16" width="38" height="10">
-      <text x="0" y="13" fontFamily="Arial, sans-serif" fontSize="13" fontWeight="700" fill="white" letterSpacing="0.5">SAMSUNG</text>
-    </svg>
-  );
-}
-
-function OppoSvg() {
-  return (
-    <svg viewBox="0 0 40 14" width="32" height="11">
-      <text x="0" y="12" fontFamily="Arial, sans-serif" fontSize="13" fontWeight="800" fill="white">OPPO</text>
-    </svg>
-  );
-}
-
-function VivoSvg() {
-  return (
-    <svg viewBox="0 0 30 14" width="26" height="11">
-      <text x="0" y="12" fontFamily="Arial, sans-serif" fontSize="13" fontWeight="700" fill="white" fontStyle="italic">vivo</text>
-    </svg>
-  );
-}
-
-function RedmiSvg() {
-  return (
-    <svg viewBox="0 0 42 14" width="34" height="11">
-      <text x="0" y="12" fontFamily="Arial, sans-serif" fontSize="12" fontWeight="700" fill="white">Redmi</text>
-    </svg>
-  );
-}
-
-function MotorolaSvg() {
-  return (
-    <svg viewBox="0 0 22 22" width="18" height="18" fill="none">
-      <circle cx="11" cy="11" r="10" stroke="white" strokeWidth="1.5" />
-      <text x="11" y="15.5" textAnchor="middle" fontFamily="Arial" fontSize="11" fontWeight="900" fill="white">M</text>
-    </svg>
-  );
-}
-
-function NokiaSvg() {
-  return (
-    <svg viewBox="0 0 38 14" width="30" height="11">
-      <text x="0" y="12" fontFamily="Arial, sans-serif" fontSize="13" fontWeight="800" fill="white">NOKIA</text>
-    </svg>
-  );
-}
-
-function RealmeSvg() {
-  return (
-    <svg viewBox="0 0 44 14" width="36" height="11">
-      <text x="0" y="12" fontFamily="Arial, sans-serif" fontSize="12" fontWeight="700" fill="white">realme</text>
-    </svg>
-  );
-}
-
-function OnePlusSvg() {
-  return (
-    <svg viewBox="0 0 26 16" width="22" height="13">
-      <text x="0" y="13" fontFamily="Arial, sans-serif" fontSize="13" fontWeight="900" fill="white">1+</text>
-    </svg>
-  );
-}
-
-function HonorSvg() {
-  return (
-    <svg viewBox="0 0 40 14" width="32" height="11">
-      <text x="0" y="12" fontFamily="Arial, sans-serif" fontSize="13" fontWeight="700" fill="white">HONOR</text>
-    </svg>
-  );
-}
-
-function IqooSvg() {
-  return (
-    <svg viewBox="0 0 32 14" width="26" height="11">
-      <text x="0" y="12" fontFamily="Arial, sans-serif" fontSize="13" fontWeight="700" fill="white">iQOO</text>
-    </svg>
-  );
-}
-
-function InfinixSvg() {
-  return (
-    <svg viewBox="0 0 44 14" width="36" height="11">
-      <text x="0" y="12" fontFamily="Arial, sans-serif" fontSize="11" fontWeight="700" fill="white">infinix</text>
+    <svg viewBox={`0 0 ${label.length * 7.5} 14`} width={label.length * 6} height={11}>
+      <text x="0" y="12" fontFamily="Arial, sans-serif" fontSize={size} fontWeight="700" fill={color}>
+        {label}
+      </text>
     </svg>
   );
 }
 
 /* ── Brand registry ─────────────────────────────────────────────────── */
-const BRAND_REGISTRY: {
+interface BrandEntry {
   keywords: string[];
-  info: BrandInfo;
-  Icon: React.FC;
-}[] = [
+  name: string;
+  label: string;
+  bg: string;
+  iconBg: string;
+  renderIcon: (size?: number) => React.ReactNode;
+}
+
+const BRAND_REGISTRY: BrandEntry[] = [
   {
     keywords: ["apple", "iphone", "ipad", "macbook", "airpods", "imac", "ipod"],
-    info: { name: "Apple", bg: "#1d1d1f", text: "#fff", label: "Apple" },
-    Icon: AppleSvg,
+    name: "Apple", label: "Apple", bg: "#1d1d1f", iconBg: "#1d1d1f",
+    renderIcon: (s = 16) => <SiIcon icon={siApple} size={s} color="#fff" />,
   },
   {
     keywords: ["samsung", "sumsung", "samsang", "samsng", "galaxy", "samung"],
-    info: { name: "Samsung", bg: "#1428A0", text: "#fff", label: "Samsung" },
-    Icon: SamsungSvg,
+    name: "Samsung", label: "Samsung", bg: "#1428A0", iconBg: "#1428A0",
+    renderIcon: (s = 16) => <SiIcon icon={siSamsung} size={s} color="#fff" />,
   },
   {
     keywords: ["oppo", "oppo reno", "oppo a", "oppo f", "oppo k"],
-    info: { name: "Oppo", bg: "#1D6F42", text: "#fff", label: "Oppo" },
-    Icon: OppoSvg,
+    name: "Oppo", label: "Oppo", bg: "#1D6F42", iconBg: "#1D6F42",
+    renderIcon: (s = 16) => <SiIcon icon={siOppo} size={s} color="#fff" />,
   },
   {
     keywords: ["redmi", "xiaomi", "mi ", "poco", "mi note", "mi pro"],
-    info: { name: "Redmi", bg: "#FF6900", text: "#fff", label: "Redmi" },
-    Icon: RedmiSvg,
+    name: "Redmi", label: "Redmi", bg: "#FF6900", iconBg: "#FF6900",
+    renderIcon: (s = 16) => <SiIcon icon={siXiaomi} size={s} color="#fff" />,
   },
   {
     keywords: ["motorola", "moto g", "moto e", "moto x", "moto edge", "moto"],
-    info: { name: "Motorola", bg: "#003087", text: "#fff", label: "Moto" },
-    Icon: MotorolaSvg,
+    name: "Motorola", label: "Moto", bg: "#E1140A", iconBg: "#E1140A",
+    renderIcon: (s = 16) => <SiIcon icon={siMotorola} size={s} color="#fff" />,
   },
   {
     keywords: ["nokia"],
-    info: { name: "Nokia", bg: "#005AFF", text: "#fff", label: "Nokia" },
-    Icon: NokiaSvg,
+    name: "Nokia", label: "Nokia", bg: "#005AFF", iconBg: "#005AFF",
+    renderIcon: (s = 16) => <SiIcon icon={siNokia} size={s} color="#fff" />,
   },
   {
     keywords: ["vivo", "vivo y", "vivo v", "vivo x", "vivo t"],
-    info: { name: "Vivo", bg: "#415FFF", text: "#fff", label: "Vivo" },
-    Icon: VivoSvg,
+    name: "Vivo", label: "Vivo", bg: "#415FFF", iconBg: "#415FFF",
+    renderIcon: (s = 16) => <SiIcon icon={siVivo} size={s} color="#fff" />,
   },
   {
     keywords: ["realme", "realme narzo"],
-    info: { name: "Realme", bg: "#F5A623", text: "#fff", label: "Realme" },
-    Icon: RealmeSvg,
+    name: "Realme", label: "Realme", bg: "#F5A623", iconBg: "#F5A623",
+    renderIcon: () => <TextMark label="realme" color="#fff" size={10} />,
   },
   {
     keywords: ["oneplus", "one plus"],
-    info: { name: "OnePlus", bg: "#F5010C", text: "#fff", label: "OnePlus" },
-    Icon: OnePlusSvg,
+    name: "OnePlus", label: "OnePlus", bg: "#F5010C", iconBg: "#F5010C",
+    renderIcon: (s = 16) => <SiIcon icon={siOneplus} size={s} color="#fff" />,
   },
   {
     keywords: ["honor"],
-    info: { name: "Honor", bg: "#C0392B", text: "#fff", label: "Honor" },
-    Icon: HonorSvg,
+    name: "Honor", label: "Honor", bg: "#1a1a2e", iconBg: "#1a1a2e",
+    renderIcon: (s = 16) => <SiIcon icon={siHonor} size={s} color="#fff" />,
   },
   {
     keywords: ["iqoo"],
-    info: { name: "iQOO", bg: "#232323", text: "#fff", label: "iQOO" },
-    Icon: IqooSvg,
+    name: "iQOO", label: "iQOO", bg: "#232323", iconBg: "#232323",
+    renderIcon: () => <TextMark label="iQOO" color="#fff" size={11} />,
   },
   {
     keywords: ["infinix"],
-    info: { name: "Infinix", bg: "#E31837", text: "#fff", label: "Infinix" },
-    Icon: InfinixSvg,
+    name: "Infinix", label: "Infinix", bg: "#E31837", iconBg: "#E31837",
+    renderIcon: () => <TextMark label="infinix" color="#fff" size={9} />,
+  },
+  {
+    keywords: ["huawei"],
+    name: "Huawei", label: "Huawei", bg: "#CF0A2C", iconBg: "#CF0A2C",
+    renderIcon: (s = 16) => <SiIcon icon={siHuawei} size={s} color="#fff" />,
+  },
+  {
+    keywords: ["google pixel", "pixel"],
+    name: "Google", label: "Pixel", bg: "#4285F4", iconBg: "#4285F4",
+    renderIcon: (s = 16) => <SiIcon icon={siGoogle} size={s} color="#fff" />,
+  },
+  {
+    keywords: ["sony", "xperia"],
+    name: "Sony", label: "Sony", bg: "#000000", iconBg: "#000000",
+    renderIcon: (s = 16) => <SiIcon icon={siSony} size={s} color="#fff" />,
+  },
+  {
+    keywords: ["lg "],
+    name: "LG", label: "LG", bg: "#A50034", iconBg: "#A50034",
+    renderIcon: (s = 16) => <SiIcon icon={siLg} size={s} color="#fff" />,
+  },
+  {
+    keywords: ["lenovo"],
+    name: "Lenovo", label: "Lenovo", bg: "#E2231A", iconBg: "#E2231A",
+    renderIcon: (s = 16) => <SiIcon icon={siLenovo} size={s} color="#fff" />,
+  },
+  {
+    keywords: ["asus"],
+    name: "Asus", label: "Asus", bg: "#1A1A1A", iconBg: "#1A1A1A",
+    renderIcon: (s = 16) => <SiIcon icon={siAsus} size={s} color="#fff" />,
+  },
+  {
+    keywords: ["htc"],
+    name: "HTC", label: "HTC", bg: "#5EA417", iconBg: "#5EA417",
+    renderIcon: (s = 16) => <SiIcon icon={siHtc} size={s} color="#fff" />,
+  },
+  {
+    keywords: ["acer"],
+    name: "Acer", label: "Acer", bg: "#83B81A", iconBg: "#83B81A",
+    renderIcon: (s = 16) => <SiIcon icon={siAcer} size={s} color="#fff" />,
   },
 ];
 
-const DEALER_BRANDS = BRAND_REGISTRY.slice(0, 12);
+/* ── Brands shown in the "We Deal In" banner ────────────────────────── */
+const DEALER_BRANDS = BRAND_REGISTRY.filter(b =>
+  ["Apple","Samsung","Oppo","Redmi","Motorola","Nokia","Vivo","Realme","OnePlus","Honor","iQOO","Infinix"].includes(b.name)
+);
 
-/* ── Detection ──────────────────────────────────────────────────────── */
-export function detectBrand(description: string) {
+/* ── Detection helper ────────────────────────────────────────────────── */
+export function detectBrand(description: string): BrandEntry | null {
   if (!description) return null;
   const lower = description.toLowerCase();
   for (const b of BRAND_REGISTRY) {
@@ -185,16 +181,16 @@ export function detectBrand(description: string) {
   return null;
 }
 
-/* ── "We Deal In" Banner ────────────────────────────────────────────── */
+/* ── "We Deal In" Banner ─────────────────────────────────────────────── */
 export function BrandDealerBanner() {
   return (
     <div
       style={{
         display: "flex",
         flexWrap: "wrap",
-        gap: "5px",
+        gap: "6px",
         alignItems: "center",
-        padding: "5px 8px",
+        padding: "6px 8px",
         background: "#f2f2f2",
         borderTop: "1px solid #ccc",
         borderBottom: "1px solid #ccc",
@@ -213,28 +209,28 @@ export function BrandDealerBanner() {
       >
         We Deal In:
       </span>
-      {DEALER_BRANDS.map(({ info, Icon }) => (
+      {DEALER_BRANDS.map((b) => (
         <div
-          key={info.name}
-          title={info.name}
-          style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1px" }}
+          key={b.name}
+          title={b.name}
+          style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2px" }}
         >
           <div
             style={{
-              background: info.bg,
-              borderRadius: "5px",
-              width: "32px",
-              height: "20px",
+              background: b.iconBg,
+              borderRadius: "6px",
+              width: "30px",
+              height: "22px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               overflow: "hidden",
-              padding: "2px 3px",
+              padding: "3px",
             }}
           >
-            <Icon />
+            {b.renderIcon(16)}
           </div>
-          <span style={{ fontSize: "6px", color: "#444", whiteSpace: "nowrap" }}>{info.label}</span>
+          <span style={{ fontSize: "6px", color: "#444", whiteSpace: "nowrap", lineHeight: 1 }}>{b.label}</span>
         </div>
       ))}
     </div>
@@ -243,41 +239,39 @@ export function BrandDealerBanner() {
 
 /* ── Per-item badge (inline with product name) ──────────────────────── */
 export function BrandBadge({ description }: { description: string }) {
-  const match = detectBrand(description);
-  if (!match) return null;
-  const { info, Icon } = match;
+  const b = detectBrand(description);
+  if (!b) return null;
   return (
     <span
       style={{
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
-        background: info.bg,
+        background: b.iconBg,
         borderRadius: "4px",
         padding: "2px 4px",
         verticalAlign: "middle",
         marginRight: "5px",
         height: "18px",
-        minWidth: "22px",
+        minWidth: "24px",
         overflow: "hidden",
       }}
     >
-      <Icon />
+      {b.renderIcon(13)}
     </span>
   );
 }
 
 export function BrandBadgeInline({ description }: { description: string }) {
-  const match = detectBrand(description);
-  if (!match) return null;
-  const { info, Icon } = match;
+  const b = detectBrand(description);
+  if (!b) return null;
   return (
     <span
       style={{
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
-        background: info.bg,
+        background: b.iconBg,
         borderRadius: "3px",
         padding: "1px 3px",
         verticalAlign: "middle",
@@ -287,7 +281,7 @@ export function BrandBadgeInline({ description }: { description: string }) {
         overflow: "hidden",
       }}
     >
-      <Icon />
+      {b.renderIcon(12)}
     </span>
   );
 }
