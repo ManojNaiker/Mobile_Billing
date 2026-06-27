@@ -200,7 +200,7 @@ export function InvoicePreviewFormat3({ invoice, company, isInterState, includeG
                 {invoice.discount_amount > 0 && (
                   <tr style={{ borderBottom: '1px solid #eee' }}>
                     <td style={{ padding: '5px 0', color: '#555' }}>Discount</td>
-                    <td style={{ padding: '5px 0', textAlign: 'right', color: '#e53e3e' }}>- {formatIndianCurrency(invoice.discount_amount).replace('₹', '')}</td>
+                    <td style={{ padding: '5px 0', textAlign: 'right', color: '#e53e3e' }}>{formatIndianCurrency(invoice.discount_amount).replace('₹', '')}</td>
                   </tr>
                 )}
                 {includeGst && invoice.taxable_value !== invoice.subtotal && (

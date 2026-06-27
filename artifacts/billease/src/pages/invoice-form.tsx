@@ -675,7 +675,7 @@ export default function InvoiceForm() {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Discount:</span>
-                <span>-{formatIndianCurrency(totals.discount_amount)}</span>
+                <span>{formatIndianCurrency(totals.discount_amount)}</span>
               </div>
               <div className="flex justify-between border-t pt-2 mt-2">
                 <span className="font-medium">{watchIncludeGst ? 'Taxable Value:' : 'Net Amount:'}</span>
