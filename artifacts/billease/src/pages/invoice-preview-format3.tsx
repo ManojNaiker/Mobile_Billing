@@ -183,7 +183,7 @@ export function InvoicePreviewFormat3({ invoice, company, isInterState, includeG
 
             <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div style={{ padding: '4px', background: '#fff', border: '1px solid #ddd', display: 'inline-block' }}>
-                <QRCodeSVG value={qrData} size={56} level="L" />
+                <QRCodeSVG value={qrData} size={90} level="M" />
               </div>
               <div style={{ fontSize: '9px', color: '#888', fontStyle: 'italic' }}>Scan to verify<br />invoice details</div>
             </div>

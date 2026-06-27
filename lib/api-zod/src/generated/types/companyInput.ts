@@ -27,6 +27,8 @@ export interface CompanyInput {
   /** @nullable */
   branch_name?: string | null;
   /** @nullable */
+  upi_id?: string | null;
+  /** @nullable */
   logo_url?: string | null;
   /** @nullable */
   declaration_text?: string | null;

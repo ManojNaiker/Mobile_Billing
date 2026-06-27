@@ -63,23 +63,10 @@ export default function InvoicePreview() {
 
   const taxSummaryList = Object.values(taxSummary);
 
-  const descriptions = invoice.items.map((it: any) => it.description).join(", ");
-  const qrData = [
-    `Vendor: ${company.name}`,
-    `Invoice No: ${invoice.invoice_number}`,
-    `Date: ${invoice.invoice_date}`,
-    `Mode: ${invoice.payment_mode}`,
-    `Bill To: ${invoice.buyer_name}`,
-    invoice.buyer_phone ? `Mobile: ${invoice.buyer_phone}` : null,
-    `Items: ${descriptions}`,
-    `Subtotal: ${invoice.subtotal}`,
-    `Taxable Value: ${invoice.taxable_value}`,
-    invoice.cgst_total > 0 ? `CGST: ${invoice.cgst_total}` : null,
-    invoice.sgst_total > 0 ? `SGST: ${invoice.sgst_total}` : null,
-    invoice.igst_total > 0 ? `IGST: ${invoice.igst_total}` : null,
-    `Grand Total: ${invoice.grand_total}`,
-    invoice.buyer_gstin ? `GSTIN: ${invoice.buyer_gstin}` : null,
-  ].filter(Boolean).join("\n");
+  const upiId = (company as any).upi_id;
+  const qrData = upiId
+    ? `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(company.name)}&am=${invoice.grand_total}&cu=INR&tn=${encodeURIComponent(`Invoice ${invoice.invoice_number}`)}`
+    : `INV:${invoice.invoice_number}|${invoice.invoice_date}|${invoice.buyer_name}|Rs${invoice.grand_total}`;
 
   const navBar = (
     <div className="flex justify-between items-center no-print">
@@ -411,7 +398,7 @@ export default function InvoicePreview() {
               </div>
               <div className="mt-4 flex gap-4 items-center">
                 <div className="p-1 bg-white inline-block border border-gray-200">
-                  <QRCodeSVG value={qrData} size={64} level="L" />
+                  <QRCodeSVG value={qrData} size={90} level="M" />
                 </div>
                 <div className="text-xs text-gray-500 italic">Scan to verify<br/>invoice details</div>
               </div>

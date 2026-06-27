@@ -41,6 +41,8 @@ export interface Company {
   /** @nullable */
   branch_name?: string | null;
   /** @nullable */
+  upi_id?: string | null;
+  /** @nullable */
   logo_url?: string | null;
   /** @nullable */
   declaration_text?: string | null;
@@ -98,6 +100,8 @@ export interface CompanyInput {
   ifsc_code?: string | null;
   /** @nullable */
   branch_name?: string | null;
+  /** @nullable */
+  upi_id?: string | null;
   /** @nullable */
   logo_url?: string | null;
   /** @nullable */

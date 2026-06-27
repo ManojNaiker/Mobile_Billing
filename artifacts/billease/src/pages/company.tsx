@@ -31,6 +31,7 @@ const companySchema = z.object({
   account_number: z.string().optional(),
   ifsc_code: z.string().optional(),
   branch_name: z.string().optional(),
+  upi_id: z.string().optional(),
   invoice_prefix: z.string().optional(),
   declaration_text: z.string().optional(),
   authorized_signatory: z.string().optional(),
@@ -69,6 +70,7 @@ export default function Company() {
       account_number: "",
       ifsc_code: "",
       branch_name: "",
+      upi_id: "",
       invoice_prefix: "INV-",
       declaration_text: "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
       authorized_signatory: "",
@@ -103,6 +105,7 @@ export default function Company() {
         account_number: company.account_number || "",
         ifsc_code: company.ifsc_code || "",
         branch_name: company.branch_name || "",
+        upi_id: (company as any).upi_id || "",
         invoice_prefix: company.invoice_prefix || "INV-",
         declaration_text: company.declaration_text || "We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.",
         authorized_signatory: company.authorized_signatory || "",
@@ -262,6 +265,16 @@ export default function Company() {
                       <FormItem>
                         <FormLabel>Branch Name</FormLabel>
                         <FormControl><Input {...field} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField control={form.control} name="upi_id" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>UPI ID</FormLabel>
+                        <FormControl><Input {...field} placeholder="yourname@upi" /></FormControl>
+                        <FormDescription>Invoice QR code will use this for UPI payment scanning.</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )} />

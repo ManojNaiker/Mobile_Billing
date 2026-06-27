@@ -15,6 +15,7 @@ export const companyTable = pgTable("company", {
   account_number: text("account_number"),
   ifsc_code: text("ifsc_code"),
   branch_name: text("branch_name"),
+  upi_id: text("upi_id"),
   logo_url: text("logo_url"),
   declaration_text: text("declaration_text"),
   authorized_signatory: text("authorized_signatory"),

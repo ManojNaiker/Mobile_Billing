@@ -489,6 +489,8 @@ components:
           type: ["string", "null"]
         branch_name:
           type: ["string", "null"]
+        upi_id:
+          type: ["string", "null"]
         logo_url:
           type: ["string", "null"]
         declaration_text:
@@ -559,6 +561,8 @@ components:
         ifsc_code:
           type: ["string", "null"]
         branch_name:
+          type: ["string", "null"]
+        upi_id:
           type: ["string", "null"]
         logo_url:
           type: ["string", "null"]
