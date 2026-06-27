@@ -1,0 +1,65 @@
+Manoj Naiker@Manoj_Naiker_IT MINGW64 /d/BillingApplication/Manoj (main)
+$ pnpm install
+Scope: all 9 workspace projects
+Already up to date
+Done in 546ms using pnpm v11.9.0
+
+Manoj Naiker@Manoj_Naiker_IT MINGW64 /d/BillingApplication/Manoj (main)
+$ pnpm --filter @workspace/db run push
+$ drizzle-kit push --config ./drizzle.config.ts
+Reading config file 'D:\BillingApplication\Manoj\lib\db\drizzle.config.ts'
+DATABASE_URL, ensure the database is provisioned
+D:\BillingApplication\Manoj\lib\db:
+[ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL] @workspace/db@0.0.0 push: `drizzle-kit push --config ./drizzle.config.ts`
+Exit status 1
+
+Manoj Naiker@Manoj_Naiker_IT MINGW64 /d/BillingApplication/Manoj (main)
+$ bash scripts/start-dev.sh
+$ export NODE_ENV=development && pnpm run build && pnpm run start
+$ vite --config vite.config.ts --host 0.0.0.0
+'export' is not recognized as an internal or external command,
+operable program or batch file.
+D:\BillingApplication\Manoj\artifacts\api-server:
+[ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL] @workspace/api-server@0.0.0 dev: `export NODE_ENV=development && pnpm run build && pnpm run start`
+Exit status 1
+D:\BillingApplication\Manoj\node_modules\.pnpm\rollup@4.62.2\node_modules\rollup\dist\native.js:121
+                throw new Error(
+                      ^
+
+Error: Cannot find module @rollup/rollup-win32-x64-msvc. npm has a bug related to optional dependencies (https://github.com/npm/cli/issues/4828). Please try `npm i` again after removing both package-lock.json and node_modules directory.
+    at requireWithFriendlyError (D:\BillingApplication\Manoj\node_modules\.pnpm\rollup@4.62.2\node_modules\rollup\dist\native.js:121:9)
+    at Object.<anonymous> (D:\BillingApplication\Manoj\node_modules\.pnpm\rollup@4.62.2\node_modules\rollup\dist\native.js:130:76)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at cjsLoader (node:internal/modules/esm/translators:342:5)
+    at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:234:7) {
+  [cause]: Error: Cannot find module '@rollup/rollup-win32-x64-msvc'
+  Require stack:
+  - D:\BillingApplication\Manoj\node_modules\.pnpm\rollup@4.62.2\node_modules\rollup\dist\native.js
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1420:15)
+      at defaultResolveImpl (node:internal/modules/cjs/loader:1058:19)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1063:22)
+      at Module._load (node:internal/modules/cjs/loader:1226:37)
+      at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+      at Module.require (node:internal/modules/cjs/loader:1503:12)
+      at require (node:internal/modules/helpers:152:16)
+      at requireWithFriendlyError (D:\BillingApplication\Manoj\node_modules\.pnpm\rollup@4.62.2\node_modules\rollup\dist\native.js:103:10)
+      at Object.<anonymous> (D:\BillingApplication\Manoj\node_modules\.pnpm\rollup@4.62.2\node_modules\rollup\dist\native.js:130:76) {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [
+      'D:\\BillingApplication\\Manoj\\node_modules\\.pnpm\\rollup@4.62.2\\node_modules\\rollup\\dist\\native.js'
+    ]
+  }
+}
+
+Node.js v24.9.0
+D:\BillingApplication\Manoj\artifacts\billease:
+[ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL] @workspace/billease@0.0.0 dev: `vite --config vite.config.ts --host 0.0.0.0`
+Exit status 1
+
+Manoj Naiker@Manoj_Naiker_IT MINGW64 /d/BillingApplication/Manoj (main)
