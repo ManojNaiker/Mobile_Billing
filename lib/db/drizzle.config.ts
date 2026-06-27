@@ -1,14 +1,18 @@
 import { defineConfig } from "drizzle-kit";
 import path from "path";
+import fs from "fs";
 
-if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL, ensure the database is provisioned");
+const workspaceRoot = path.resolve(__dirname, "../../");
+const dbDir = path.join(workspaceRoot, "data");
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true });
 }
+const dbPath = path.join(dbDir, "billease.db");
 
 export default defineConfig({
   schema: path.join(__dirname, "./src/schema/index.ts"),
-  dialect: "postgresql",
+  dialect: "sqlite",
   dbCredentials: {
-    url: process.env.DATABASE_URL,
+    url: dbPath,
   },
 });

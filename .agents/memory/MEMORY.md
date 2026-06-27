@@ -1,0 +1,1 @@
+- [SQLite migration quirks](sqlite-migration.md) — better-sqlite3 needs to be external in esbuild AND a direct dep of api-server; db path must use import.meta.url not process.cwd()

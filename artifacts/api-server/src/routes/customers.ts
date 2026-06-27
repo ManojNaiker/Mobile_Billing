@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { db } from "@workspace/db";
 import { customersTable } from "@workspace/db";
-import { eq, ilike, or } from "drizzle-orm";
+import { eq, like, or } from "drizzle-orm";
 
 const router = Router();
 
@@ -16,9 +16,9 @@ router.get("/", async (req, res) => {
         .from(customersTable)
         .where(
           or(
-            ilike(customersTable.name, `%${search}%`),
-            ilike(customersTable.gstin, `%${search}%`),
-            ilike(customersTable.email, `%${search}%`)
+            like(customersTable.name, `%${search}%`),
+            like(customersTable.gstin, `%${search}%`),
+            like(customersTable.email, `%${search}%`)
           )
         )
         .orderBy(customersTable.created_at);

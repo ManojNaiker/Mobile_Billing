@@ -1,9 +1,10 @@
-import { pgTable, serial, text, doublePrecision, timestamp, jsonb, boolean } from "drizzle-orm/pg-core";
+import { sqliteTable, integer, text, real } from "drizzle-orm/sqlite-core";
+import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
-export const invoicesTable = pgTable("invoices", {
-  id: serial("id").primaryKey(),
+export const invoicesTable = sqliteTable("invoices", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   invoice_number: text("invoice_number").notNull().unique(),
   invoice_date: text("invoice_date").notNull(),
   e_way_bill_number: text("e_way_bill_number"),
@@ -24,21 +25,21 @@ export const invoicesTable = pgTable("invoices", {
   dispatched_through: text("dispatched_through"),
   destination: text("destination"),
   terms_of_delivery: text("terms_of_delivery"),
-  subtotal: doublePrecision("subtotal").notNull().default(0),
-  discount_amount: doublePrecision("discount_amount").notNull().default(0),
-  taxable_value: doublePrecision("taxable_value").notNull().default(0),
-  cgst_total: doublePrecision("cgst_total").notNull().default(0),
-  sgst_total: doublePrecision("sgst_total").notNull().default(0),
-  igst_total: doublePrecision("igst_total").notNull().default(0),
-  grand_total: doublePrecision("grand_total").notNull().default(0),
+  subtotal: real("subtotal").notNull().default(0),
+  discount_amount: real("discount_amount").notNull().default(0),
+  taxable_value: real("taxable_value").notNull().default(0),
+  cgst_total: real("cgst_total").notNull().default(0),
+  sgst_total: real("sgst_total").notNull().default(0),
+  igst_total: real("igst_total").notNull().default(0),
+  grand_total: real("grand_total").notNull().default(0),
   amount_in_words: text("amount_in_words").notNull().default(""),
   payment_mode: text("payment_mode").notNull().default("cash"),
   invoice_format: text("invoice_format").default("format1"),
   status: text("status").notNull().default("draft"),
-  include_gst: boolean("include_gst").notNull().default(true),
-  items: jsonb("items").notNull().default([]),
-  created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
-  updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+  include_gst: integer("include_gst", { mode: "boolean" }).notNull().default(true),
+  items: text("items", { mode: "json" }).notNull().default([]),
+  created_at: text("created_at").default(sql`(CURRENT_TIMESTAMP)`),
+  updated_at: text("updated_at").default(sql`(CURRENT_TIMESTAMP)`),
 });
 
 export const insertInvoiceSchema = createInsertSchema(invoicesTable).omit({ id: true, created_at: true, updated_at: true });

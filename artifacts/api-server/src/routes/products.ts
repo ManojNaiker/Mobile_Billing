@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { db } from "@workspace/db";
 import { productsTable } from "@workspace/db";
-import { eq, ilike } from "drizzle-orm";
+import { eq, like } from "drizzle-orm";
 
 const router = Router();
 
@@ -14,7 +14,7 @@ router.get("/", async (req, res) => {
       rows = await db
         .select()
         .from(productsTable)
-        .where(ilike(productsTable.name, `%${search}%`))
+        .where(like(productsTable.name, `%${search}%`))
         .orderBy(productsTable.created_at);
     } else {
       rows = await db.select().from(productsTable).orderBy(productsTable.created_at);
