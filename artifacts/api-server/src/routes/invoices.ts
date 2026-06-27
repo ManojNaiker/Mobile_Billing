@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { db } from "@workspace/db";
 import { invoicesTable, companyTable } from "@workspace/db";
-import { eq, like, or, desc, sql } from "drizzle-orm";
+import { eq, ilike, or, desc, sql } from "drizzle-orm";
 
 const router = Router();
 
@@ -68,8 +68,8 @@ router.get("/", async (req, res) => {
     if (search) {
       conditions.push(
         or(
-          like(invoicesTable.invoice_number, `%${search}%`),
-          like(invoicesTable.buyer_name, `%${search}%`)
+          ilike(invoicesTable.invoice_number, `%${search}%`),
+          ilike(invoicesTable.buyer_name, `%${search}%`)
         )
       );
     }
@@ -141,7 +141,7 @@ router.put("/:id", async (req, res) => {
     }
     const [updated] = await db
       .update(invoicesTable)
-      .set({ ...body, updated_at: new Date().toISOString() })
+      .set({ ...body, updated_at: new Date() })
       .where(eq(invoicesTable.id, id))
       .returning();
     if (!updated) return res.status(404).json({ error: "Invoice not found" });

@@ -1,10 +1,9 @@
-import { sqliteTable, integer, text, real } from "drizzle-orm/sqlite-core";
-import { sql } from "drizzle-orm";
+import { pgTable, serial, text, integer, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
-export const companyTable = sqliteTable("company", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const companyTable = pgTable("company", {
+  id: serial("id").primaryKey(),
   name: text("name").notNull(),
   address: text("address").notNull(),
   gstin: text("gstin"),
@@ -34,8 +33,8 @@ export const companyTable = sqliteTable("company", {
   smtp_pass: text("smtp_pass"),
   smtp_from_name: text("smtp_from_name"),
   smtp_secure: text("smtp_secure"),
-  created_at: text("created_at").default(sql`(CURRENT_TIMESTAMP)`),
-  updated_at: text("updated_at").default(sql`(CURRENT_TIMESTAMP)`),
+  created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 });
 
 export const insertCompanySchema = createInsertSchema(companyTable).omit({ id: true, created_at: true, updated_at: true });

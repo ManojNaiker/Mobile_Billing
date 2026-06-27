@@ -10,14 +10,14 @@ A professional GST Tax Invoice Generator web app for Indian small businesses. Cr
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- SQLite DB file: `data/billease.db` — auto-created on first run, no setup needed
+- Required env: `DATABASE_URL` — Postgres connection string
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
 - Frontend: React + Vite + Tailwind CSS + shadcn/ui + wouter
 - API: Express 5
-- DB: SQLite (better-sqlite3) + Drizzle ORM — embedded, no separate server needed
+- DB: PostgreSQL + Drizzle ORM
 - Validation: Zod (`zod/v4`), `drizzle-zod`
 - Charts: Recharts
 - API codegen: Orval (from OpenAPI spec)
