@@ -54,6 +54,8 @@ export interface InvoiceInput {
   amount_in_words: string;
   include_gst?: boolean;
   payment_mode: string;
+  /** @nullable */
+  invoice_format?: string | null;
   status: string;
   items: InvoiceItem[];
 }

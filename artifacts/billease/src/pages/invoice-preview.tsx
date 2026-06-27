@@ -36,7 +36,7 @@ export default function InvoicePreview() {
 
   if (!invoice || !company) return <div className="p-8 text-center">Invoice not found.</div>;
 
-  const invoiceFormat = company.invoice_format || 'format1';
+  const invoiceFormat = (invoice as any).invoice_format || company.invoice_format || 'format1';
 
   // Group tax summary by HSN/Tax %
   const taxSummary = invoice.items.reduce((acc: any, item: any) => {

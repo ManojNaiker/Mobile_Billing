@@ -289,7 +289,7 @@ export function InvoicePreviewFormat2({ invoice, company, isInterState, includeG
                     <div style={{ padding: '4px', background: '#fff', border: '1px solid #ccc', display: 'inline-block' }}>
                       <QRCodeSVG value={qrData} size={64} level="L" />
                     </div>
-                    <div style={{ fontSize: '9px', color: '#666', marginTop: '2px' }}>Pay using UPI</div>
+                    <div style={{ fontSize: '9px', color: '#666', marginTop: '2px' }}>Scan to verify<br />invoice details</div>
                   </div>
                 </div>
               </td>

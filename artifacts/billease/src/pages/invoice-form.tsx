@@ -52,6 +52,7 @@ const invoiceSchema = z.object({
   destination: z.string().optional().nullable(),
   terms_of_delivery: z.string().optional().nullable(),
   payment_mode: z.string().min(1, "Payment mode is required"),
+  invoice_format: z.string().optional().nullable(),
   status: z.string().min(1, "Status is required"),
   email_to: z.string().optional(),
   is_inter_state: z.boolean(),
@@ -136,6 +137,7 @@ export default function InvoiceForm() {
       destination: "",
       terms_of_delivery: "",
       payment_mode: "Cash",
+      invoice_format: null,
       status: "paid",
       email_to: "",
       is_inter_state: false,
@@ -263,6 +265,7 @@ export default function InvoiceForm() {
       grand_total: totals.grand_total,
       amount_in_words: numberToWordsIndian(totals.grand_total),
       include_gst: data.include_gst,
+      invoice_format: data.invoice_format || company?.invoice_format || 'format1',
       items: processedItems,
     };
     

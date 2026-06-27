@@ -33,6 +33,7 @@ export const invoicesTable = pgTable("invoices", {
   grand_total: doublePrecision("grand_total").notNull().default(0),
   amount_in_words: text("amount_in_words").notNull().default(""),
   payment_mode: text("payment_mode").notNull().default("cash"),
+  invoice_format: text("invoice_format").default("format1"),
   status: text("status").notNull().default("draft"),
   include_gst: boolean("include_gst").notNull().default(true),
   items: jsonb("items").notNull().default([]),

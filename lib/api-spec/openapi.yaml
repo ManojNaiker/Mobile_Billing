@@ -801,6 +801,8 @@ components:
           type: boolean
         payment_mode:
           type: string
+        invoice_format:
+          type: ["string", "null"]
         status:
           type: string
         items:
@@ -894,6 +896,8 @@ components:
           type: boolean
         payment_mode:
           type: string
+        invoice_format:
+          type: ["string", "null"]
         status:
           type: string
         items:

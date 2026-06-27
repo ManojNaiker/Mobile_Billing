@@ -340,6 +340,7 @@ export const ListInvoicesResponse = zod.object({
   "amount_in_words": zod.string(),
   "include_gst": zod.boolean().optional(),
   "payment_mode": zod.string(),
+  "invoice_format": zod.string().nullish(),
   "status": zod.string(),
   "items": zod.array(zod.object({
   "description": zod.string(),
@@ -401,6 +402,7 @@ export const CreateInvoiceBody = zod.object({
   "amount_in_words": zod.string(),
   "include_gst": zod.boolean().optional(),
   "payment_mode": zod.string(),
+  "invoice_format": zod.string().nullish(),
   "status": zod.string(),
   "items": zod.array(zod.object({
   "description": zod.string(),
@@ -453,6 +455,7 @@ export const CreateInvoiceResponse = zod.object({
   "amount_in_words": zod.string(),
   "include_gst": zod.boolean().optional(),
   "payment_mode": zod.string(),
+  "invoice_format": zod.string().nullish(),
   "status": zod.string(),
   "items": zod.array(zod.object({
   "description": zod.string(),
@@ -523,6 +526,7 @@ export const GetInvoiceResponse = zod.object({
   "amount_in_words": zod.string(),
   "include_gst": zod.boolean().optional(),
   "payment_mode": zod.string(),
+  "invoice_format": zod.string().nullish(),
   "status": zod.string(),
   "items": zod.array(zod.object({
   "description": zod.string(),
@@ -584,6 +588,7 @@ export const UpdateInvoiceBody = zod.object({
   "amount_in_words": zod.string(),
   "include_gst": zod.boolean().optional(),
   "payment_mode": zod.string(),
+  "invoice_format": zod.string().nullish(),
   "status": zod.string(),
   "items": zod.array(zod.object({
   "description": zod.string(),
@@ -636,6 +641,7 @@ export const UpdateInvoiceResponse = zod.object({
   "amount_in_words": zod.string(),
   "include_gst": zod.boolean().optional(),
   "payment_mode": zod.string(),
+  "invoice_format": zod.string().nullish(),
   "status": zod.string(),
   "items": zod.array(zod.object({
   "description": zod.string(),
@@ -729,6 +735,7 @@ export const DuplicateInvoiceResponse = zod.object({
   "amount_in_words": zod.string(),
   "include_gst": zod.boolean().optional(),
   "payment_mode": zod.string(),
+  "invoice_format": zod.string().nullish(),
   "status": zod.string(),
   "items": zod.array(zod.object({
   "description": zod.string(),
@@ -798,6 +805,7 @@ export const GetRecentInvoicesResponseItem = zod.object({
   "amount_in_words": zod.string(),
   "include_gst": zod.boolean().optional(),
   "payment_mode": zod.string(),
+  "invoice_format": zod.string().nullish(),
   "status": zod.string(),
   "items": zod.array(zod.object({
   "description": zod.string(),
