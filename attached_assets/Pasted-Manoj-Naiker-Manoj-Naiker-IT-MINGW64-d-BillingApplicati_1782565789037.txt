@@ -1,0 +1,83 @@
+Manoj Naiker@Manoj_Naiker_IT MINGW64 /d/BillingApplication/Manoj (main)
+$ pnpm approve-builds
+There are no packages awaiting approval
+
+Manoj Naiker@Manoj_Naiker_IT MINGW64 /d/BillingApplication/Manoj (main)
+$ npm install -g windows-build-tools
+npm warn deprecated har-validator@5.1.5: this library is no longer supported
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated uuid@3.4.0: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+npm warn deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
+npm warn deprecated windows-build-tools@5.2.2: Node.js now includes build tools for Windows. You probably no longer need this tool. See https://github.com/felixrieseberg/windows-build-tools for details.
+npm warn cleanup Failed to remove some directories [
+npm warn cleanup   [
+npm warn cleanup     '\\\\?\\C:\\Users\\Manoj Naiker\\AppData\\Roaming\\npm\\node_modules\\windows-build-tools',
+npm warn cleanup     [Error: EPERM: operation not permitted, rmdir 'C:\Users\Manoj Naiker\AppData\Roaming\npm\node_modules\windows-build-tools\node_modules\nugget'] {
+npm warn cleanup       errno: -4048,
+npm warn cleanup       code: 'EPERM',
+npm warn cleanup       syscall: 'rmdir',
+npm warn cleanup       path: 'C:\\Users\\Manoj Naiker\\AppData\\Roaming\\npm\\node_modules\\windows-build-tools\\node_modules\\nugget'
+npm warn cleanup     }
+npm warn cleanup   ]
+npm warn cleanup ]
+npm error code 1
+npm error path C:\Users\Manoj Naiker\AppData\Roaming\npm\node_modules\windows-build-tools
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c node ./dist/index.js
+npm error Downloading python-2.7.15.amd64.msi
+npm error [>                                            ] 0.0% (0 B/s)
+npm error ^[[1000D^[[0K^[[1A^[[1000D^[[0K^[[1A^[[1000D^[[0KDownloading python-2.7.15.amd64.msi
+npm error [>                                            ] 0.0% of 20.2 MB (0 B/s)
+npm error ^[[1000D^[[0K^[[1A^[[1000D^[[0K^[[1A^[[1000D^[[0KDownloading python-2.7.15.amd64.msi
+npm error [===>                                         ] 10.8% of 20.2 MB (2.18 MB/s)
+npm error ^[[1000D^[[0K^[[1A^[[1000D^[[0K^[[1A^[[1000D^[[0KDownloading python-2.7.15.amd64.msi
+npm error [=========>                                   ] 22.3% of 20.2 MB (4.51 MB/s)
+npm error ^[[1000D^[[0K^[[1A^[[1000D^[[0K^[[1A^[[1000D^[[0KDownloading python-2.7.15.amd64.msi
+npm error [===============>                             ] 36.7% of 20.2 MB (5.95 MB/s)
+npm error ^[[1000D^[[0K^[[1A^[[1000D^[[0K^[[1A^[[1000D^[[0KDownloading python-2.7.15.amd64.msi
+npm error [=====================>                       ] 50.8% of 20.2 MB (6.86 MB/s)
+npm error ^[[1000D^[[0K^[[1A^[[1000D^[[0K^[[1A^[[1000D^[[0KDownloading python-2.7.15.amd64.msi
+npm error [============================>                ] 65.4% of 20.2 MB (7.56 MB/s)
+npm error ^[[1000D^[[0K^[[1A^[[1000D^[[0K^[[1A^[[1000D^[[0KDownloading python-2.7.15.amd64.msi
+npm error [==================================>          ] 78.6% of 20.2 MB (7.95 MB/s)
+npm error ^[[1000D^[[0K^[[1A^[[1000D^[[0K^[[1A^[[1000D^[[0KDownloading python-2.7.15.amd64.msi
+npm error [========================================>    ] 91.9% of 20.2 MB (8.27 MB/s)
+npm error ^[[1000D^[[0K^[[1A^[[1000D^[[0K^[[1A^[[1000D^[[0KDownloading python-2.7.15.amd64.msi
+npm error [============================================>] 100.0% of 20.2 MB (8.1 MB/s)
+npm error ^[[1000D^[[0K^[[1A^[[1000D^[[0K^[[1A^[[1000D^[[0KDownloading python-2.7.15.amd64.msi
+npm error [============================================>] 100.0% of 20.2 MB (8.1 MB/s)
+npm error ^[[1000D^[[0K^[[1A^[[1000D^[[0K^[[1A^[[1000D^[[0KDownloading python-2.7.15.amd64.msi
+npm error [============================================>] 100.0% of 20.2 MB (8.1 MB/s)
+npm error Downloaded python-2.7.15.amd64.msi. Saved to C:\Users\Manoj Naiker\.windows-build-tools\python-2.7.15.amd64.msi.
+npm error
+npm error
+npm error ^[[1000D^[[0K^[[1A^[[1000D^[[0K^[[1A^[[1000D^[[0KDownloading vs_BuildTools.exe
+npm error [>                                            ] 0.0% (0 B/s)
+npm error ^[[1000D^[[0K^[[1A^[[1000D^[[0K^[[1A^[[1000D^[[0KDownloading vs_BuildTools.exe
+npm error [>                                            ] 0.0% of 1.12 MB (0 B/s)
+npm error ^[[1000D^[[0K^[[1A^[[1000D^[[0K^[[1A^[[1000D^[[0KDownloading vs_BuildTools.exe
+npm error [===>                                         ] 10.2% of 1.12 MB (114 kB/s)
+npm error ^[[1000D^[[0K^[[1A^[[1000D^[[0K^[[1A^[[1000D^[[0KDownloading vs_BuildTools.exe
+npm error [===================>                         ] 45.3% of 1.12 MB (508 kB/s)
+npm error ^[[1000D^[[0K^[[1A^[[1000D^[[0K^[[1A^[[1000D^[[0KDownloading vs_BuildTools.exe
+npm error [============================================>] 100.0% of 1.12 MB (896 kB/s)
+npm error ^[[1000D^[[0K^[[1A^[[1000D^[[0K^[[1A^[[1000D^[[0KDownloading vs_BuildTools.exe
+npm error [============================================>] 100.0% of 1.12 MB (896 kB/s)
+npm error ^[[1000D^[[0K^[[1A^[[1000D^[[0K^[[1A^[[1000D^[[0KDownloading vs_BuildTools.exe
+npm error [============================================>] 100.0% of 1.12 MB (896 kB/s)
+npm error Downloaded vs_BuildTools.exe. Saved to C:\Users\Manoj Naiker\.windows-build-tools\vs_BuildTools.exe.
+npm error
+npm error Starting installation...
+npm error Downloading installers failed. Error: TypeError: 'process.env' only accepts a configurable, writable, and enumerable data descriptor
+npm error     at Object.defineProperty (<anonymous>)
+npm error     at Object.removePath (C:\Users\Manoj Naiker\AppData\Roaming\npm\node_modules\windows-build-tools\dist\utils\remove-path.js:11:12)
+npm error     at Object.install (C:\Users\Manoj Naiker\AppData\Roaming\npm\node_modules\windows-build-tools\dist\install\index.js:29:19)
+npm error     at C:\Users\Manoj Naiker\AppData\Roaming\npm\node_modules\windows-build-tools\dist\start.js:17:19
+npm error     at Object.download (C:\Users\Manoj Naiker\AppData\Roaming\npm\node_modules\windows-build-tools\dist\download.js:35:5)
+npm error     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+npm error     at async Object.aquireInstallers (C:\Users\Manoj Naiker\AppData\Roaming\npm\node_modules\windows-build-tools\dist\aquire-installers.js:32:13) {
+npm error   code: 'ERR_INVALID_OBJECT_DEFINE_PROPERTY'
+npm error }
+npm error windows-build-tools will now exit.
+npm error A complete log of this run can be found in: C:\Users\Manoj Naiker\AppData\Local\npm-cache\_logs\2026-06-27T13_09_24_877Z-debug-0.log
