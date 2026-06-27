@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { QRCodeSVG } from "qrcode.react";
 import { InvoicePreviewFormat2 } from "./invoice-preview-format2";
 import { InvoicePreviewFormat3 } from "./invoice-preview-format3";
+import { BrandBadge } from "@/lib/brand-icons";
 
 export default function InvoicePreview() {
   const { id } = useParams();
@@ -257,6 +258,7 @@ export default function InvoicePreview() {
                 <tr key={i}>
                   <td style={{ border: '1px solid black', padding: '4px 6px', textAlign: 'center', verticalAlign: 'top' }}>{i + 1}</td>
                   <td style={{ border: '1px solid black', padding: '4px 6px', verticalAlign: 'top', fontWeight: 500 }}>
+                    <BrandBadge description={item.description} />
                     {item.description}
                     {item.notes && <div style={{ fontSize: '11px', color: '#555', marginTop: '2px' }}>{item.notes}</div>}
                   </td>

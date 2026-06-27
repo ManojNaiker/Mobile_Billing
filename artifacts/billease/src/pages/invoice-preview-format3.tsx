@@ -1,6 +1,7 @@
 import React from "react";
 import { formatIndianCurrency } from "@/lib/indian-utils";
 import { QRCodeSVG } from "qrcode.react";
+import { BrandBadgeInline } from "@/lib/brand-icons";
 
 interface Format3Props {
   invoice: any;
@@ -117,7 +118,10 @@ export function InvoicePreviewFormat3({ invoice, company, isInterState, includeG
               <tr key={i} style={{ borderBottom: '1px solid #eee' }}>
                 <td style={{ padding: '7px 8px', textAlign: 'left', verticalAlign: 'top', color: '#555' }}>{i + 1}</td>
                 <td style={{ padding: '7px 8px', verticalAlign: 'top' }}>
-                  <div style={{ fontWeight: 600 }}>{item.description}</div>
+                  <div style={{ fontWeight: 600 }}>
+                    <BrandBadgeInline description={item.description} />
+                    {item.description}
+                  </div>
                   {item.notes && <div style={{ fontSize: '10px', color: '#666', marginTop: '1px' }}>{item.notes}</div>}
                   {item.discountPercent > 0 && <div style={{ fontSize: '10px', color: '#888' }}>Disc: {item.discountPercent}%</div>}
                 </td>
