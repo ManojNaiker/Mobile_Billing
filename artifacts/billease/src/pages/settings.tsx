@@ -128,6 +128,61 @@ const FORMATS = [
       </div>
     ),
   },
+  {
+    id: "format3",
+    name: "Minimalist Format",
+    description: "Clean modern layout: large INVOICE title, two-column header, simple line table, summary at bottom-right.",
+    preview: (
+      <div style={{ fontFamily: 'Arial, sans-serif', fontSize: '7px', padding: '6px', background: '#fff', color: '#111', height: '120px', overflow: 'hidden' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
+          <div style={{ fontWeight: 800, fontSize: '11px', letterSpacing: '-0.5px' }}>Business Name</div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: '13px', fontWeight: 900, letterSpacing: '1px' }}>INVOICE</div>
+            <div style={{ fontSize: '5.5px', color: '#555' }}>NO. INV-0001</div>
+            <div style={{ fontSize: '5.5px', color: '#555' }}>DATE 27-Jun-2026</div>
+          </div>
+        </div>
+        <div style={{ borderBottom: '1.5px solid #111', marginBottom: '4px' }} />
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '4px' }}>
+          <div style={{ flex: 1, fontSize: '5.5px' }}>
+            <div style={{ fontWeight: 700, color: '#999', fontSize: '4.5px', textTransform: 'uppercase', marginBottom: '1px' }}>From</div>
+            <div style={{ fontWeight: 700 }}>Seller Name</div>
+            <div style={{ color: '#555' }}>123 Any St, City</div>
+          </div>
+          <div style={{ flex: 1, fontSize: '5.5px' }}>
+            <div style={{ fontWeight: 700, color: '#999', fontSize: '4.5px', textTransform: 'uppercase', marginBottom: '1px' }}>Billed To</div>
+            <div style={{ fontWeight: 700 }}>Customer Name</div>
+            <div style={{ color: '#555' }}>456 Buyer St, City</div>
+          </div>
+        </div>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '5px' }}>
+          <thead>
+            <tr style={{ borderTop: '1px solid #ddd', borderBottom: '1px solid #ddd', background: '#f7f7f7' }}>
+              <th style={{ padding: '1px 2px', textAlign: 'left' }}>S</th>
+              <th style={{ padding: '1px 2px', textAlign: 'left' }}>Description</th>
+              <th style={{ padding: '1px 2px', textAlign: 'right' }}>Price</th>
+              <th style={{ padding: '1px 2px', textAlign: 'right' }}>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style={{ borderBottom: '1px solid #eee' }}>
+              <td style={{ padding: '1px 2px' }}>1</td>
+              <td style={{ padding: '1px 2px', fontWeight: 600 }}>Product A</td>
+              <td style={{ padding: '1px 2px', textAlign: 'right' }}>8,000</td>
+              <td style={{ padding: '1px 2px', textAlign: 'right', fontWeight: 700 }}>₹9,440</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '3px', fontSize: '5px' }}>
+          <div style={{ width: '70px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #eee', padding: '1px 0' }}><span>Subtotal</span><span>8,000</span></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #eee', padding: '1px 0' }}><span>Tax (10%)</span><span>1,440</span></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1.5px solid #111', padding: '1px 0', fontWeight: 800 }}><span>TOTAL</span><span>₹9,440</span></div>
+          </div>
+        </div>
+      </div>
+    ),
+  },
 ];
 
 export default function Settings() {

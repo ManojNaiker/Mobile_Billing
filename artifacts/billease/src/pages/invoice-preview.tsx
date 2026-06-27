@@ -7,6 +7,7 @@ import { Printer, Edit2, ArrowLeft } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { QRCodeSVG } from "qrcode.react";
 import { InvoicePreviewFormat2 } from "./invoice-preview-format2";
+import { InvoicePreviewFormat3 } from "./invoice-preview-format3";
 
 export default function InvoicePreview() {
   const { id } = useParams();
@@ -108,6 +109,21 @@ export default function InvoicePreview() {
     );
   }
 
+  if (invoiceFormat === 'format3') {
+    return (
+      <div className="max-w-[210mm] mx-auto space-y-6 pb-20 animate-in fade-in duration-500">
+        {navBar}
+        <InvoicePreviewFormat3
+          invoice={invoice}
+          company={company}
+          isInterState={isInterState}
+          includeGst={includeGst}
+          qrData={qrData}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-[210mm] mx-auto space-y-6 pb-20 animate-in fade-in duration-500">
       {navBar}
@@ -143,12 +159,19 @@ export default function InvoicePreview() {
           <div className="flex border-b border-black">
             {/* Left Col - Seller */}
             <div className="w-1/2 p-3 border-r border-black">
-              <h2 className="font-bold text-lg">{company.name}</h2>
-              <div className="text-sm whitespace-pre-wrap mt-1">{company.address}</div>
-              {company.phone && <div className="text-sm mt-1">Ph: {company.phone}</div>}
-              {company.email && <div className="text-sm">Email: {company.email}</div>}
-              <div className="text-sm mt-2"><span className="font-semibold">GSTIN/UIN:</span> {company.gstin}</div>
-              <div className="text-sm"><span className="font-semibold">State Name:</span> {company.state_name}, Code: {company.state_code}</div>
+              <div className="flex items-start gap-2">
+                {company.logo_url && (
+                  <img src={company.logo_url} alt="Logo" style={{ width: '52px', height: '52px', objectFit: 'contain', flexShrink: 0 }} />
+                )}
+                <div>
+                  <h2 className="font-bold text-lg">{company.name}</h2>
+                  <div className="text-sm whitespace-pre-wrap mt-1">{company.address}</div>
+                  {company.phone && <div className="text-sm mt-1">Ph: {company.phone}</div>}
+                  {company.email && <div className="text-sm">Email: {company.email}</div>}
+                  <div className="text-sm mt-2"><span className="font-semibold">GSTIN/UIN:</span> {company.gstin}</div>
+                  <div className="text-sm"><span className="font-semibold">State Name:</span> {company.state_name}, Code: {company.state_code}</div>
+                </div>
+              </div>
             </div>
 
             {/* Right Col - Invoice Details */}

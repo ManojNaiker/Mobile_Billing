@@ -202,6 +202,7 @@ export default function InvoiceForm() {
       form.setValue("buyer_phone", cust.phone || "");
       form.setValue("buyer_state_name", cust.state_name || "");
       form.setValue("buyer_state_code", cust.state_code || "");
+      form.setValue("email_to", cust.email || "");
 
       // Auto detect inter-state: compare state codes if available, else compare GSTIN prefixes
       if (company?.state_code && cust.state_code) {
